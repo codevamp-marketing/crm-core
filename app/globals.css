@@ -1,0 +1,180 @@
+@config '../tailwind.config.ts';
+@import "tailwindcss";
+
+/* ============================================================
+   LIGHT MODE — matches qdmx-marketing-crm exactly
+   ============================================================ */
+:root {
+  /* ── App-level design tokens (exact qdmx values) ── */
+  --bg-app: #F9FAFB;
+  --bg-card: #FFFFFF;
+  --text-primary: #18181B;
+  --text-secondary: #71717A;
+  --border-subtle: #E4E4E7;
+  --primary: #18181B;
+
+  /* ── Shadcn / Radix HSL tokens ── */
+  /* background & foreground */
+  --background: 0 0% 98%;
+  /* #F9FAFB ≈ zinc-50 */
+  --foreground: 240 10% 10%;
+  /* #18181B = zinc-900 */
+
+  /* card */
+  --card: 0 0% 100%;
+  /* white */
+  --card-foreground: 240 10% 10%;
+
+  /* popover */
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 10%;
+
+  /* primary — zinc-900 */
+  --primary-hsl: 240 10% 10%;
+  --primary: 240 10% 10%;
+  --primary-foreground: 0 0% 100%;
+
+  /* secondary — very light zinc */
+  --secondary: 240 5% 96%;
+  /* zinc-100 */
+  --secondary-foreground: 240 10% 10%;
+
+  /* muted — THIS IS THE KEY FIX: light zinc-100, NOT dark */
+  --muted: 240 5% 96%;
+  /* #F4F4F5 = zinc-100 */
+  --muted-foreground: 240 4% 46%;
+  /* #71717A = zinc-500 */
+
+  /* accent — zinc-100 */
+  --accent: 240 5% 96%;
+  --accent-foreground: 240 10% 10%;
+
+  /* destructive */
+  --destructive: 0 84% 60%;
+  /* red-500 */
+  --destructive-foreground: 0 0% 100%;
+
+  /* border, input, ring */
+  --border: 240 6% 90%;
+  /* #E4E4E7 = zinc-200 */
+  --input: 240 6% 90%;
+  --ring: 240 10% 10%;
+
+  /* radius */
+  --radius: 0.75rem;
+
+  /* ── Sidebar tokens ── */
+  --sidebar-background: 0 0% 100%;
+  /* white */
+  --sidebar-foreground: 240 10% 10%;
+  --sidebar-primary: 240 10% 10%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 5% 96%;
+  /* zinc-100 */
+  --sidebar-accent-foreground: 240 10% 10%;
+  --sidebar-border: 240 6% 90%;
+  --sidebar-ring: 240 10% 10%;
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+.dark {
+  --bg-app: #09090B;
+  --bg-card: #18181B;
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --border-subtle: #27272A;
+  --primary: #FAFAFA;
+
+  --background: 240 10% 4%;
+  --foreground: 0 0% 98%;
+
+  --card: 240 10% 10%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 240 10% 10%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 10% 10%;
+
+  --secondary: 240 4% 16%;
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 240 4% 16%;
+  /* dark zinc-800 */
+  --muted-foreground: 240 5% 65%;
+
+  --accent: 240 4% 16%;
+  --accent-foreground: 0 0% 98%;
+
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 4% 16%;
+  --input: 240 4% 16%;
+  --ring: 240 5% 84%;
+
+  --sidebar-background: 240 10% 10%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 0 0% 98%;
+  --sidebar-primary-foreground: 240 10% 10%;
+  --sidebar-accent: 240 4% 16%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 240 4% 16%;
+  --sidebar-ring: 240 5% 84%;
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   CUSTOM SCROLLBAR — matches qdmx exactly
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E4E4E7;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4D4D8;
+}
+
+/* ============================================================
+   SIDEBAR EXPLICIT OVERRIDES (Tailwind v4 compatibility)
+   The [data-sidebar] attrs are set by the shadcn sidebar.tsx
+   ============================================================ */
+[data-sidebar="sidebar"] {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
