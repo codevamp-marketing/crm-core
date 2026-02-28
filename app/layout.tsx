@@ -9,8 +9,8 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from '@/components/theme-provider'
 
 export const metadata: Metadata = {
-  title: 'LendGrid SaaS App',
-  description: 'For the financial services industry. A Lending Aggregator Platform',
+  title: 'Nexus AI',
+  description: 'AI-Powered Lead Management Platform',
   icons: {
     icon: "/logo2.png",
   },

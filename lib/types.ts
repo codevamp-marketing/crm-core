@@ -1,4 +1,7 @@
-export type Role = 'Admin' | 'Marketing Manager' | 'Sales Manager' | 'Sales Executive';
+/* ── Auth / User enums ──────────────────────────────────────── */
+export type Role = 'admin' | 'manager' | 'executive';
+export type Gender = 'male' | 'female' | 'other';
+export type UserStatus = 'active' | 'inactive';
 
 export type LeadSource = 'Facebook Ads' | 'Google Ads' | 'Instagram' | 'Website' | 'Referral' | 'Manual' | 'LinkedIn' | 'TikTok';
 
@@ -10,9 +13,25 @@ export type Priority = 'Low' | 'Medium' | 'High';
 
 export interface User {
     id: string;
-    name: string;
-    role: Role;
-    avatar: string;
+    username?: string | null;
+    email?: string | null;
+    contact?: string | null;
+    designation?: string | null;
+    gender?: Gender | null;
+    status?: UserStatus | null;
+    role?: Role | null;
+    avatar?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+/** Payload shape for POST /api/v1/create-user */
+export interface CreateUserPayload {
+    username?: string;
+    email?: string;
+    password?: string;
+    gender?: Gender;
+    role?: Role;
 }
 
 export interface Activity {

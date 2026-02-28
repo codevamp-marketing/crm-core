@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { navigationPaths } from "@/lib/navigation";
-import { ThemeLogo } from "@/components/theme-logo";
 
 export default function Footer() {
   return (
@@ -11,14 +10,11 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="w-15 h-15 rounded-xl flex items-center justify-center shadow-lg">
-                <ThemeLogo
-                  alt="F2Fintech Logo"
-                  className="w-14 h-14"
-                />
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="w-9 h-9 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center shadow-sm shrink-0">
+                <span className="text-white dark:text-zinc-900 font-bold text-base">N</span>
               </div>
-              <span className="text-2xl font-bold gradient-text text-primary">LendGrid</span>
+              <span className="text-xl font-bold tracking-tight text-primary">Nexus AI</span>
             </div>
             <p className="text-foreground/70 leading-relaxed">
               Empowering the future of loan distribution with technology and innovation.
@@ -78,7 +74,7 @@ export default function Footer() {
         </div>
 
         <div className="border-border/10 pt-8 text-center text-foreground">
-          <p>&copy; 2025 LendGrid. All rights reserved. Built for the future of financial services.</p>
+          <p>&copy; 2025 Nexus AI. All rights reserved. Built for the future of financial services.</p>
         </div>
       </div>
     </div>

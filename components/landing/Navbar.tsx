@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { navigationPaths } from "@/lib/navigation";
-import { ThemeLogo } from "@/components/theme-logo";
 
 export default function Navbar() {
   const router = useRouter();
@@ -16,15 +15,14 @@ export default function Navbar() {
         style={{ backgroundColor: 'hsl(var(--navbar-bg) / 0.9)' }}
       >
         <div
-          className="flex items-center gap-1 cursor-pointer"
+          className="flex items-center gap-3 cursor-pointer"
           onClick={() => router.push('/')}
         >
-          <ThemeLogo
-            alt="F2Fintech Logo"
-            className="w-16 h-16"
-          />
-          <span className="text-2xl font-bold tracking-wide cursor-pointer" style={{ color: '#3b82f6' }}>
-            LendGrid
+          <div className="w-9 h-9 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center shadow-sm shrink-0">
+            <span className="text-white dark:text-zinc-900 font-bold text-base">N</span>
+          </div>
+          <span className="text-xl font-bold tracking-tight" style={{ color: '#3b82f6' }}>
+            Nexus AI
           </span>
         </div>
 
@@ -44,7 +42,7 @@ export default function Navbar() {
           <Link href={navigationPaths.login}>
             <Button
               variant="outline"
-              className="rounded-2xl px-4 py-2 font-semibold text-base border-2 hover:bg-blue-fixed/10 transition-all"
+              className="rounded-2xl px-4 py-2 font-semibold text-base border-2 hover:bg-blue-fixed/10 transition-all cursor-pointer"
               style={{ borderColor: '#3b82f6', color: '#3b82f6' }}
             >
               Login
@@ -52,7 +50,7 @@ export default function Navbar() {
           </Link>
           <Link href={navigationPaths.signup}>
             <Button
-              className="rounded-2xl px-4 py-2 font-bold text-base text-white hover:opacity-90 shadow-md transition-all"
+              className="rounded-2xl px-4 py-2 font-bold text-base text-white hover:opacity-90 shadow-md transition-all cursor-pointer"
               style={{ backgroundColor: '#3b82f6' }}
             >
               Sign Up

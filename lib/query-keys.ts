@@ -3,6 +3,9 @@
  * Keeps cache keys consistent and easy to invalidate.
  */
 export const queryKeys = {
+    auth: {
+        session: ['auth', 'session'] as const,
+    },
     leads: {
         all: ['leads'] as const,
         list: () => [...queryKeys.leads.all, 'list'] as const,
@@ -17,3 +20,4 @@ export const queryKeys = {
         list: () => [...queryKeys.feeds.all, 'list'] as const,
     },
 } as const;
+
