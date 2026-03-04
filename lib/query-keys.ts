@@ -19,5 +19,9 @@ export const queryKeys = {
         all: ['feeds'] as const,
         list: () => [...queryKeys.feeds.all, 'list'] as const,
     },
+    dashboard: {
+        all: ['dashboard'] as const,
+        stats: (period: string) => [...queryKeys.dashboard.all, 'stats', period] as const,
+    },
 } as const;
 

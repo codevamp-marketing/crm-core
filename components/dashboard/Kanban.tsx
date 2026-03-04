@@ -36,10 +36,10 @@ const STAGES: DealStage[] = [
 ];
 
 const MOCK_USERS: User[] = [
-    { id: 'u1', name: 'Dr. Amit Sharma', role: 'Admin', avatar: 'https://i.pravatar.cc/150?u=u1' },
-    { id: 'u2', name: 'Ms. Priya Verma', role: 'Sales Manager', avatar: 'https://i.pravatar.cc/150?u=u2' },
-    { id: 'u3', name: 'Mr. Rahul Singh', role: 'Marketing Manager', avatar: 'https://i.pravatar.cc/150?u=u3' },
-    { id: 'u4', name: 'Ms. Neha Gupta', role: 'Sales Executive', avatar: 'https://i.pravatar.cc/150?u=u4' },
+    { id: 'u1', username: 'Dr. Amit Sharma', role: 'admin', avatar: 'https://i.pravatar.cc/150?u=u1' },
+    { id: 'u2', username: 'Ms. Priya Verma', role: 'manager', avatar: 'https://i.pravatar.cc/150?u=u2' },
+    { id: 'u3', username: 'Mr. Rahul Singh', role: 'manager', avatar: 'https://i.pravatar.cc/150?u=u3' },
+    { id: 'u4', username: 'Ms. Neha Gupta', role: 'executive', avatar: 'https://i.pravatar.cc/150?u=u4' },
 ];
 
 const STUDENT_NAMES = [
@@ -139,7 +139,7 @@ function SortableItem({ lead }: { lead: Lead }) {
             <div
                 ref={setNodeRef}
                 style={style}
-                className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 opacity-80 h-[140px] rotate-2"
+                className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 opacity-80 h-[140px] rotate-2"
             />
         );
     }
@@ -150,19 +150,20 @@ function SortableItem({ lead }: { lead: Lead }) {
             style={style}
             {...attributes}
             {...listeners}
-            // onClick={() => setSelectedLeadId(lead.id)}
-            className="bg-white p-4 rounded-xl border border-zinc-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:border-zinc-200 transition-all cursor-grab active:cursor-grabbing group"
+            className="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:border-zinc-300 dark:hover:border-zinc-600 transition-all cursor-grab active:cursor-grabbing group"
         >
             <div className="flex justify-between items-start mb-3">
                 <span className={clsx(
                     "text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide",
-                    lead.priority === 'High' ? "bg-rose-50 text-rose-700" :
-                        lead.priority === 'Medium' ? "bg-amber-50 text-amber-700" :
-                            "bg-zinc-100 text-zinc-600"
+                    lead.priority === 'High'
+                        ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
+                        : lead.priority === 'Medium'
+                            ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"
+                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
                 )}>
                     {lead.priority}
                 </span>
-                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100 transition-opacity">
                     <MoreHorizontal className="w-4 h-4" />
                 </button>
             </div>
@@ -171,7 +172,7 @@ function SortableItem({ lead }: { lead: Lead }) {
             <p className="text-xs text-[var(--text-secondary)] mb-4">{lead.company}</p>
 
             <div className="flex items-center justify-between text-xs pt-3 border-t border-[var(--border-subtle)]">
-                <div className="flex items-center gap-1.5 text-zinc-900 font-medium bg-zinc-50 px-2 py-1 rounded-md">
+                <div className="flex items-center gap-1.5 text-[var(--text-primary)] font-medium bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
                     <DollarSign className="w-3 h-3 text-[var(--text-secondary)]" />
                     <span>{lead.dealValue.toLocaleString()}</span>
                 </div>
@@ -204,7 +205,7 @@ function Column({ id, leads }: { id: string; leads: Lead[] }) {
                 </button>
             </div>
 
-            <div ref={setNodeRef} className="bg-zinc-50/60 rounded-2xl p-2 flex-1 overflow-y-auto min-h-[100px]">
+            <div ref={setNodeRef} className="bg-zinc-100/60 dark:bg-zinc-900/60 rounded-2xl p-2 flex-1 overflow-y-auto min-h-[100px]">
                 <SortableContext items={leads.map((l) => l.id)} strategy={verticalListSortingStrategy}>
                     <div className="space-y-3 pb-20">
                         {leads.map((lead) => (

@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <div className="fixed top-5 inset-x-0 z-50 mx-auto w-[95%] max-w-7xl">
       <nav
-        className="flex items-center justify-between rounded-2xl px-6 pl-3 py-1 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.8)] ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-xl"
+        className="flex items-center justify-between rounded-2xl px-4 pl-3 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.8)] ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-xl"
         style={{ backgroundColor: 'hsl(var(--navbar-bg) / 0.9)' }}
       >
         <div

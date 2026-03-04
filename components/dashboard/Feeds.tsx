@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import {
-    MessageSquare, Share2, ThumbsUp, Eye, Link as LinkIcon,
+    Share2, ThumbsUp, Eye,
     ExternalLink, Globe, Linkedin, Facebook, Twitter, Instagram,
-    Search, Filter, Plus
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useRouter } from 'next/navigation';
 import { format, subDays } from 'date-fns';
 import { FeedItem } from '@/lib/types';
 
@@ -90,6 +90,7 @@ const MOCK_FEEDS: FeedItem[] = [
 ];
 
 export default function Feeds() {
+    const router = useRouter();
     const [filter, setFilter] = useState('All');
     const [linkingFeedId, setLinkingFeedId] = useState<string | null>(null);
 
@@ -110,8 +111,8 @@ export default function Feeds() {
                             className={clsx(
                                 "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
                                 filter === type
-                                    ? "bg-zinc-900 text-white shadow-lg"
-                                    : "bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
+                                    ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
+                                    : "bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800"
                             )}
                         >
                             {type}
@@ -122,11 +123,11 @@ export default function Feeds() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredFeeds.map((feed) => (
-                    <div key={feed.id} className="bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+                    <div key={feed.id} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-subtle)] shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
                         <div className="p-6 flex-1">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-zinc-50 rounded-lg border border-zinc-100">
+                                    <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-[var(--border-subtle)]">
                                         <PlatformIcon platform={feed.platform} />
                                     </div>
                                     <div>
@@ -134,7 +135,7 @@ export default function Feeds() {
                                         <p className="text-[10px] text-[var(--text-secondary)]">{format(new Date(feed.timestamp), 'MMM d, yyyy')}</p>
                                     </div>
                                 </div>
-                                <span className="px-2 py-1 bg-zinc-50 border border-zinc-100 rounded-md text-[10px] font-medium text-zinc-500 uppercase tracking-wide">
+                                <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 border border-[var(--border-subtle)] rounded-md text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-wide">
                                     {feed.type}
                                 </span>
                             </div>
@@ -162,11 +163,11 @@ export default function Feeds() {
                             </div>
                         </div>
 
-                        <div className="bg-zinc-50 p-4 border-t border-zinc-100 rounded-b-2xl">
+                        <div className="bg-zinc-50 dark:bg-zinc-900/50 p-4 border-t border-[var(--border-subtle)] rounded-b-2xl">
                             <div className="flex items-center justify-between">
                                 <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Linked Leads</p>
                                 <button
-                                    // onClick={() => navigate('/leads', { state: { feedId: feed.id } })}
+                                    onClick={() => router.push('/leads')}
                                     className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1"
                                 >
                                     View {feed.linkedLeadIds.length} Leads <ExternalLink className="w-3 h-3" />

@@ -126,10 +126,13 @@ export default function AICampaigns() {
                             <div className="flex items-center gap-3">
                                 <div className={clsx(
                                     "p-2.5 rounded-xl",
-                                    campaign.platform === 'Google' ? "bg-blue-50 text-blue-600" :
-                                        campaign.platform === 'Facebook' ? "bg-indigo-50 text-indigo-600" :
-                                            campaign.platform === 'Instagram' ? "bg-rose-50 text-rose-600" :
-                                                "bg-sky-50 text-sky-600"
+                                    campaign.platform === 'Google'
+                                        ? "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400"
+                                        : campaign.platform === 'Facebook'
+                                            ? "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400"
+                                            : campaign.platform === 'Instagram'
+                                                ? "bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400"
+                                                : "bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400"
                                 )}>
                                     <Target className="w-5 h-5" />
                                 </div>
@@ -141,9 +144,11 @@ export default function AICampaigns() {
                             <div className="flex flex-col items-end">
                                 <span className={clsx(
                                     "px-2.5 py-1 rounded-full text-xs font-bold border mb-1",
-                                    campaign.aiOptimizationScore > 90 ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
-                                        campaign.aiOptimizationScore > 70 ? "bg-amber-50 text-amber-700 border-amber-100" :
-                                            "bg-rose-50 text-rose-700 border-rose-100"
+                                    campaign.aiOptimizationScore > 90
+                                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900"
+                                        : campaign.aiOptimizationScore > 70
+                                            ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900"
+                                            : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-900"
                                 )}>
                                     AI Score: {campaign.aiOptimizationScore}
                                 </span>
@@ -151,32 +156,32 @@ export default function AICampaigns() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 mb-6">
-                            <div className="p-3 bg-zinc-50 rounded-xl">
-                                <p className="text-xs text-zinc-500 mb-1 flex items-center gap-1">
+                            <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                                <p className="text-xs text-[var(--text-secondary)] mb-1 flex items-center gap-1">
                                     <MousePointer className="w-3 h-3" /> Clicks
                                 </p>
-                                <p className="text-lg font-bold text-zinc-900">{campaign.clicks.toLocaleString()}</p>
+                                <p className="text-lg font-bold text-[var(--text-primary)]">{campaign.clicks.toLocaleString()}</p>
                             </div>
-                            <div className="p-3 bg-zinc-50 rounded-xl">
-                                <p className="text-xs text-zinc-500 mb-1 flex items-center gap-1">
+                            <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                                <p className="text-xs text-[var(--text-secondary)] mb-1 flex items-center gap-1">
                                     <TrendingUp className="w-3 h-3" /> ROI
                                 </p>
-                                <p className="text-lg font-bold text-zinc-900">{campaign.roi}x</p>
+                                <p className="text-lg font-bold text-[var(--text-primary)]">{campaign.roi}x</p>
                             </div>
-                            <div className="p-3 bg-zinc-50 rounded-xl">
-                                <p className="text-xs text-zinc-500 mb-1 flex items-center gap-1">
+                            <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                                <p className="text-xs text-[var(--text-secondary)] mb-1 flex items-center gap-1">
                                     <DollarSign className="w-3 h-3" /> Spent
                                 </p>
-                                <p className="text-lg font-bold text-zinc-900">${campaign.spent.toLocaleString()}</p>
+                                <p className="text-lg font-bold text-[var(--text-primary)]">${campaign.spent.toLocaleString()}</p>
                             </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
                             <div className="flex items-center gap-2">
-                                <div className="w-24 h-2 bg-zinc-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-zinc-900 rounded-full" style={{ width: `${(campaign.spent / campaign.budget) * 100}%` }}></div>
+                                <div className="w-24 h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                                    <div className="h-full bg-[var(--text-primary)] rounded-full" style={{ width: `${(campaign.spent / campaign.budget) * 100}%` }}></div>
                                 </div>
-                                <span className="text-xs text-zinc-500">${campaign.budget - campaign.spent} remaining</span>
+                                <span className="text-xs text-[var(--text-secondary)]">${campaign.budget - campaign.spent} remaining</span>
                             </div>
                             <button className="text-sm font-medium text-[var(--text-primary)] hover:text-indigo-600 transition-colors">
                                 View Details

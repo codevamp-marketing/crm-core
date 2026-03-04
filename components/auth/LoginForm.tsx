@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Eye,
     EyeOff,
@@ -26,11 +26,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { navigationPaths } from '@/lib/navigation';
 import { useLogin } from '@/hooks/use-auth';
+import { setCookie, decodeJwt } from '@/lib/utils';
+import { getRoleDashboardPath } from '@/lib/rbac';
 
 /* ─── Zod schema ─────────────────────────────────────────────── */
 const loginSchema = z.object({
-    email: z.string().email('Enter a valid email').toLowerCase().trim(),
-    password: z.string().min(1, 'Password is required'),
+    email: z.string()
+        .email('Please enter a valid email address')
+        .toLowerCase()
+        .trim(),
+    password: z.string()
+        .min(8, "Password Must Be 8 Characters Long")
+        .regex(/[A-Z]/, "Password Must Contain At Least 1 Uppercase Letter")
+        .regex(/[a-z]/, "Password Must Contain At Least 1 Lowercase Letter")
+        .regex(/[0-9]/, "Password Must Contain At Least 1 Number")
+        .regex(/[^\w]/, "Password Must Contain At Least 1 Special Character")
+        .max(20, "Password cannot be more than 20 characters"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -56,8 +67,16 @@ function Orb({ className, style }: { className?: string; style?: React.CSSProper
 /* ─── Main component ─────────────────────────────────────────── */
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const loginMutation = useLogin();
+    const { toast } = useToast();
+
+    // If middleware bounced the user here from a protected route, honour it
+    // after login (safe-guard: only allow same-origin relative paths).
+    const fromParam = searchParams.get('from');
+    const redirectAfterLogin = fromParam?.startsWith('/') ? fromParam : null;
 
     const {
         register,
@@ -69,11 +88,56 @@ export function LoginForm() {
         defaultValues: { email: '', password: '' },
     });
 
-    const onSubmit = (data: LoginFormData) => {
-        loginMutation.mutate({ email: data.email, password: data.password });
+    const onSubmit = async (data: LoginFormData) => {
+        setIsSubmitting(true);
+        try {
+            const response = await loginMutation.mutateAsync({
+                email: data.email,
+                password: data.password,
+            });
+
+            if (!response?.access_token) {
+                toast({
+                    title: 'Login failed',
+                    description: response?.message || 'Invalid email or password.',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
+            // ── Save token to cookie (1-day expiry) ───────────────────────────
+            setCookie('token', response.access_token, 1);
+
+            // ── Decode JWT to get role ────────────────────────────────────────
+            const decoded = decodeJwt(response.access_token);
+            const role = decoded?.role as string | undefined;
+
+            toast({
+                title: 'Welcome back! 👋',
+                description: response.message || 'Logged in successfully.',
+            });
+
+            // ── Redirect: honour ?from= param, else fall back to role dashboard
+            router.push(redirectAfterLogin ?? getRoleDashboardPath(role));
+        } catch (error: any) {
+            let message = 'Invalid email or password. Please try again.';
+            try {
+                const parsed = JSON.parse(error.message);
+                message = parsed?.message || message;
+            } catch {
+                message = error.message || message;
+            }
+            toast({
+                title: 'Login failed',
+                description: message,
+                variant: 'destructive',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const isLoading = loginMutation.isPending;
+    const isLoading = isSubmitting || loginMutation.isPending;
 
     return (
         <div className="min-h-screen w-full flex bg-background text-foreground overflow-hidden">

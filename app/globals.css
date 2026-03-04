@@ -84,7 +84,7 @@
   --bg-card: #18181B;
   --text-primary: #FAFAFA;
   --text-secondary: #A1A1AA;
-  --border-subtle: #27272A;
+  --border-subtle: #3F3F46;
   --primary: #FAFAFA;
 
   --background: 240 10% 4%;
@@ -155,6 +155,14 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #D4D4D8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3F3F46;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #52525B;
 }
 
 /* ============================================================

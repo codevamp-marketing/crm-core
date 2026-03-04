@@ -11,5 +11,6 @@ export const navigationPaths = {
   feeds: '/feeds',
   kanban: '/kanban',
   leads: '/leads',
-  reports: '/reports'
+  reports: '/reports',
+  settings: '/settings',
 }
