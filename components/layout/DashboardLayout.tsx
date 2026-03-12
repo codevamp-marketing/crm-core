@@ -76,8 +76,8 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
     .split(' ')
     .map((s: string) => s.charAt(0).toUpperCase())
     .slice(0, 2)
-    .join('')
-  console.log(userRole, decoded, 'this')
+    .join('');
+
   const navItems = navigationConfig[userRole || 'admin']
 
   return (

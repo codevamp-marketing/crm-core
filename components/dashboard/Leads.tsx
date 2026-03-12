@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search, Filter, Plus, MoreHorizontal, Mail, Phone, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useLeads } from '@/hooks/use-leads';
+import { useLeadsRealtime } from '@/hooks/use-leads-realtime';
 import {
     Table,
     TableHeader,
@@ -22,6 +23,11 @@ export default function Leads() {
     const [isAddLeadModalOpen, setAddLeadModalOpen] = useState(false);
 
     const { data: leads = [], isLoading, isError } = useLeads();
+
+    // ── Supabase Realtime ─────────────────────────────────────────────────────
+    // Subscribes to INSERT + UPDATE events on the Lead table.
+    // New leads appear instantly; AI scores update live when Python agent writes back.
+    useLeadsRealtime();
 
     const feeds: any[] = [];
     const clearFeedFilter = () => setActiveFeedFilter(null);
