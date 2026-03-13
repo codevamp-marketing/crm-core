@@ -46,26 +46,25 @@ export function useLeadsRealtime() {
         const channel = supabase
             .channel('lead-changes')
 
-            // INSERT — immediately refetch the full list from NestJS.
-            // This shows the lead with real name + score=0.
-            // No setTimeout, no getById — just a clean refetch.
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'Lead' },
                 () => {
-                    queryClient.invalidateQueries({ queryKey: queryKeys.leads.list() });
+                    // Delay refetch by 2s to let Python agent score first
+                    setTimeout(() => {
+                        queryClient.invalidateQueries({ queryKey: queryKeys.leads.list() });
+                    }, 2000);
                 },
             )
 
             // UPDATE — Python agent patched aiScore/priority.
-            // Merge into cache instantly without triggering a refetch.
-            // This is what makes the score "flick" live.
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'Lead' },
                 (payload) => {
                     const updatedRow = payload.new as LeadApiResponse;
 
+                    // Update cache immediately
                     queryClient.setQueryData<Lead[]>(
                         queryKeys.leads.list(),
                         (old) => {
@@ -78,10 +77,12 @@ export function useLeadsRealtime() {
                         }
                     );
 
-                    queryClient.setQueryData<Lead>(
-                        queryKeys.leads.detail(updatedRow.id),
-                        (old) => old ? { ...old, ...mapRealtimeLead(updatedRow) } : old,
-                    );
+                    // Also invalidate to refetch fresh data from NestJS
+                    // This ensures cache stays in sync after the setQueryData
+                    queryClient.invalidateQueries({
+                        queryKey: queryKeys.leads.list(),
+                        refetchType: 'none' // updates staleTime without triggering refetch
+                    });
                 },
             )
 
