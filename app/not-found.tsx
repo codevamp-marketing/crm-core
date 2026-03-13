@@ -7,7 +7,7 @@ import { LayoutDashboard, Home, ArrowRight, Sparkles } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { getCookie } from "@/lib/utils"
 
-export default function NotFound(): JSX.Element {
+export default function NotFound(): React.JSX.Element {
     const [hovering, setHovering] = React.useState(false)
 
     // Smart navigation: if a token cookie exists the user is logged in → go to dashboard
