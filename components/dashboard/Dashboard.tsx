@@ -185,7 +185,7 @@ export default function Dashboard() {
                                 <Tooltip
                                     contentStyle={{ backgroundColor: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-subtle)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                     itemStyle={{ color: 'var(--text-primary)', fontWeight: 600 }}
-                                    formatter={(v: number) => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']}
+                                    formatter={(v: number | undefined) => [`₹${(v ?? 0).toLocaleString('en-IN')}`, 'Revenue'] as [string, string]}
                                 />
                                 <Area type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
                             </AreaChart>
@@ -231,7 +231,7 @@ export default function Dashboard() {
                                 <Tooltip
                                     cursor={{ fill: 'var(--bg-app)', radius: 4 } as any}
                                     contentStyle={{ backgroundColor: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-subtle)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(v: number) => [`${v}x`, 'ROI']}
+                                    formatter={(v: number | undefined) => [`${v ?? 0}x`, 'ROI'] as [string, string]}
                                 />
                                 <Bar dataKey="roi" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={40} />
                             </BarChart>

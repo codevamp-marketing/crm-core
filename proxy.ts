@@ -14,8 +14,8 @@ function decodeJwtEdge(token: string): Record<string, any> | null {
     }
 }
 
-/* ── Proxy (formerly middleware) ─────────────────────────────────────────── */
-export function middleware(request: NextRequest) {
+/* ── Proxy ───────────────────────────────────────────────────────────────── */
+export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Read the auth token from cookies
