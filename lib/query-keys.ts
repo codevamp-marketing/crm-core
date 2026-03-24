@@ -8,7 +8,7 @@ export const queryKeys = {
     },
     leads: {
         all: ['leads'] as const,
-        list: () => [...queryKeys.leads.all, 'list'] as const,
+        list: (params?: unknown) => [...queryKeys.leads.all, 'list', params ?? {}] as const,
         detail: (id: string) => [...queryKeys.leads.all, 'detail', id] as const,
     },
     campaigns: {
