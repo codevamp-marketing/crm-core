@@ -23,68 +23,68 @@ const PlatformIcon = ({ platform }: { platform: string }) => {
 const MOCK_FEEDS: FeedItem[] = [
     {
         id: 'f1',
-        type: 'Social Post',
+        type: 'Social_Post',
         title: 'Applications Open for B.Tech 2025 – Invertis University',
         content: 'Unlock your engineering future! Invertis University is now accepting applications for B.Tech 2025-26. Industry-aligned curriculum, top placements, and vibrant campus life await. Apply now! #BTech #Engineering #InvertisUniversity',
         platform: 'Instagram',
         url: 'https://www.invertisuniversity.ac.in/academics',
         timestamp: subDays(new Date(), 1).toISOString(),
-        metrics: { views: 24500, likes: 1840, shares: 310, comments: 97 },
+        views: 24500, likes: 1840, shares: 310, comments: 97,
         linkedLeadIds: ['l1', 'l3', 'l7'],
     },
     {
         id: 'f2',
-        type: 'Blog Article',
+        type: 'Blog_Article',
         title: 'Why Choose Invertis University for Your MBA in 2025?',
         content: 'Discover how Invertis University MBA program blends global business insights with hands-on industry exposure. From live projects to corporate tie-ups, our graduates lead the way.',
         platform: 'Website',
         url: 'https://www.invertisuniversity.ac.in/academics',
         timestamp: subDays(new Date(), 4).toISOString(),
-        metrics: { views: 8700, likes: 0, shares: 215, comments: 34 },
+        views: 8700, likes: 0, shares: 215, comments: 34,
         linkedLeadIds: ['l2', 'l9'],
     },
     {
         id: 'f3',
-        type: 'Social Post',
+        type: 'Social_Post',
         title: 'Campus Life at Invertis – More Than Just Academics',
         content: 'Sports, cultural fests, hackathons and more! Get a glimpse of the vibrant campus life at Invertis University, Bareilly. #CampusLife #InvertisUniversity #StudentLife',
         platform: 'Instagram',
         url: 'https://www.invertisuniversity.ac.in',
         timestamp: subDays(new Date(), 2).toISOString(),
-        metrics: { views: 13200, likes: 2100, shares: 185, comments: 63 },
+        views: 13200, likes: 2100, shares: 185, comments: 63,
         linkedLeadIds: ['l5', 'l12'],
     },
     {
         id: 'f4',
-        type: 'SEO Page',
+        type: 'SEO_Page',
         title: 'Best Engineering College in Bareilly – Invertis University',
         content: 'Landing page targeting "best engineering college Bareilly 2025" – showcasing NAAC accreditation, placement records, and scholarship programs at Invertis University.',
         platform: 'Website',
         url: 'https://www.invertisuniversity.ac.in/academics',
         timestamp: subDays(new Date(), 12).toISOString(),
-        metrics: { views: 41000, likes: 0, shares: 0, comments: 0 },
+        views: 41000, likes: 0, shares: 0, comments: 0,
         linkedLeadIds: ['l4', 'l6', 'l10', 'l15'],
     },
     {
         id: 'f5',
-        type: 'Social Post',
+        type: 'Social_Post',
         title: 'Scholarship Opportunities at Invertis University 2025',
         content: 'Meritorious students can avail up to 100% scholarship! Do not let finances stop your dreams. Explore scholarship options at Invertis University today. #Scholarship #HigherEducation',
         platform: 'Facebook',
         url: 'https://www.invertisuniversity.ac.in',
         timestamp: subDays(new Date(), 3).toISOString(),
-        metrics: { views: 19800, likes: 1430, shares: 420, comments: 88 },
+        views: 19800, likes: 1430, shares: 420, comments: 88,
         linkedLeadIds: ['l8', 'l11', 'l14'],
     },
     {
         id: 'f6',
-        type: 'Blog Article',
+        type: 'Blog_Article',
         title: 'Top Placement Recruiters at Invertis University – Batch 2024',
         content: 'With 500+ recruiters on campus and average packages touching 6 LPA, see why Invertis University is the preferred choice for students across UP and Uttarakhand.',
         platform: 'LinkedIn',
         url: 'https://www.invertisuniversity.ac.in',
         timestamp: subDays(new Date(), 6).toISOString(),
-        metrics: { views: 11400, likes: 620, shares: 310, comments: 47 },
+        views: 11400, likes: 620, shares: 310, comments: 47,
         linkedLeadIds: ['l13', 'l16'],
     },
 ];
@@ -104,7 +104,7 @@ export default function Feeds() {
                     <p className="text-[var(--text-secondary)] mt-1">Monitor social posts, blogs, and SEO pages linked to your student admission leads.</p>
                 </div>
                 <div className="flex gap-2">
-                    {['All', 'Social Post', 'Blog Article', 'SEO Page'].map((type) => (
+                    {['All', 'Social_Post', 'Blog_Article', 'SEO_Page'].map((type) => (
                         <button
                             key={type}
                             onClick={() => setFilter(type)}
@@ -115,7 +115,7 @@ export default function Feeds() {
                                     : "bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800"
                             )}
                         >
-                            {type}
+                            {type.replace('_', ' ')}
                         </button>
                     ))}
                 </div>
@@ -136,7 +136,7 @@ export default function Feeds() {
                                     </div>
                                 </div>
                                 <span className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 border border-[var(--border-subtle)] rounded-md text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-wide">
-                                    {feed.type}
+                                    {feed.type.replace('_', ' ')}
                                 </span>
                             </div>
 
@@ -150,15 +150,15 @@ export default function Feeds() {
                             <div className="flex items-center gap-4 py-3 border-t border-[var(--border-subtle)]">
                                 <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                                     <Eye className="w-4 h-4" />
-                                    <span className="text-xs font-medium">{feed.metrics.views.toLocaleString()}</span>
+                                    <span className="text-xs font-medium">{feed.views.toLocaleString()}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                                     <ThumbsUp className="w-4 h-4" />
-                                    <span className="text-xs font-medium">{feed.metrics.likes.toLocaleString()}</span>
+                                    <span className="text-xs font-medium">{feed.likes.toLocaleString()}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                                     <Share2 className="w-4 h-4" />
-                                    <span className="text-xs font-medium">{feed.metrics.shares.toLocaleString()}</span>
+                                    <span className="text-xs font-medium">{feed.shares.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>

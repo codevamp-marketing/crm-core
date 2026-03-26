@@ -14,13 +14,14 @@ Form submit → INSERT fires → invalidateQueries → NestJS refetch
 ~1s later → Python agent PATCHes → UPDATE fires → 
 → setQueryData patches score in-place → score flicks to 30
  */
-function mapRealtimeLead(row: LeadApiResponse): Lead {
+function mapRealtimeLead(row: LeadApiResponse): Partial<Lead> {
     return {
         id: row.id,
         name: row.name ?? 'Unknown',
-        company: row.company ?? (row as any).course ?? '',
         email: row.email ?? '',
         phone: row.phone ?? '',
+        course: row.course ?? '',
+        specialization: row.specialization ?? undefined,
         source: (row.source as Lead['source']) ?? 'Manual',
         campaign: row.campaign ?? undefined,
         tags: row.tags ?? [],
@@ -31,10 +32,10 @@ function mapRealtimeLead(row: LeadApiResponse): Lead {
         ownerId: row.ownerId ?? '',
         createdAt: row.createdAt ?? new Date().toISOString(),
         lastInteraction: row.lastInteraction ?? new Date().toISOString(),
-        status: (row.status as Lead['status']) ?? 'Lead',
+        qualificationStatus: (row.qualificationStatus as Lead['qualificationStatus']) ?? 'New_Lead',
+        pipelineStage: (row.pipelineStage as Lead['pipelineStage']) ?? 'New_Lead',
+        type: (row.type as Lead['type']) ?? 'Cold',
         dealValue: row.dealValue ?? 0,
-        stage: (row.stage as Lead['stage']) ?? 'New Lead',
-        priority: (row.priority as Lead['priority']) ?? 'Medium',
         nextFollowUp: row.nextFollowUp ?? undefined,
     };
 }
@@ -46,6 +47,8 @@ export function useLeadsRealtime() {
         const channel = supabase
             .channel('lead-changes')
 
+            // INSERT — new enquiry submitted from website form
+            // table name is lowercase 'leads' (schema uses @@map("leads"))
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'Lead' },
@@ -57,7 +60,7 @@ export function useLeadsRealtime() {
                 },
             )
 
-            // UPDATE — Python agent patched aiScore/priority.
+            // UPDATE — Python agent patched aiScore / pipelineStage / type
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'Lead' },
@@ -102,4 +105,4 @@ export function useLeadsRealtime() {
             supabase.removeChannel(channel);
         };
     }, [queryClient]);
-};
+}
