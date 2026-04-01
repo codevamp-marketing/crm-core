@@ -1,11 +1,15 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { clsx } from 'clsx';
 import { MoreHorizontal, Calendar, IndianRupee, Plus, Loader2 } from 'lucide-react';
 import { useLeads } from '@/hooks/use-leads';
 import { useLeadsRealtime } from '@/hooks/use-leads-realtime';
+import { useMoveLeadStage } from '@/hooks/use-leads';
+import { getAuthToken } from '@/lib/http-client';
+import { decodeJwt } from '@/lib/utils';
 import { Lead, PipelineStage, PIPELINE_STAGE_LABELS } from '@/lib/types';
 import { LeadDetailSheet } from './LeadDetailSheet';
+import { AddLeadDialog } from './AddLeadDialog';
 
 // ── Kanban column order ────────────────────────────────────────────────────────
 const STAGES: PipelineStage[] = [
@@ -31,12 +35,39 @@ const STAGE_COLORS: Record<PipelineStage, string> = {
     Closed_Lost: 'bg-zinc-400',
 };
 
+// ── Drag payload stored in dataTransfer ──────────────────────────────────────
+interface DragPayload {
+    leadId: string;
+    fromStage: PipelineStage;
+}
+
 // ── Lead Card ──────────────────────────────────────────────────────────────────
-function LeadCard({ lead, onSelect }: { lead: Lead; onSelect: (lead: Lead) => void }) {
+function LeadCard({
+    lead,
+    onSelect,
+    onDragStart,
+}: {
+    lead: Lead;
+    onSelect: (lead: Lead) => void;
+    onDragStart: (e: React.DragEvent, lead: Lead) => void;
+}) {
+    const [isDragging, setIsDragging] = useState(false);
+
     return (
-        <div 
+        <div
+            draggable
+            onDragStart={(e) => {
+                setIsDragging(true);
+                onDragStart(e, lead);
+            }}
+            onDragEnd={() => setIsDragging(false)}
             onClick={() => onSelect(lead)}
-            className="cursor-pointer bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:border-zinc-300 dark:hover:border-zinc-600 transition-all group"
+            className={clsx(
+                "cursor-grab active:cursor-grabbing bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)]",
+                "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)]",
+                "hover:border-zinc-300 dark:hover:border-zinc-600 transition-all group select-none",
+                isDragging && "opacity-40 scale-95 shadow-none border-dashed",
+            )}
         >
             <div className="flex justify-between items-start mb-3">
                 <span className={clsx(
@@ -90,7 +121,20 @@ function LeadCard({ lead, onSelect }: { lead: Lead; onSelect: (lead: Lead) => vo
 }
 
 // ── Column ─────────────────────────────────────────────────────────────────────
-function Column({ stage, leads, onSelectLead }: { stage: PipelineStage; leads: Lead[]; onSelectLead: (lead: Lead) => void }) {
+function Column({
+    stage,
+    leads,
+    onSelectLead,
+    onDragStart,
+    onDrop,
+}: {
+    stage: PipelineStage;
+    leads: Lead[];
+    onSelectLead: (lead: Lead) => void;
+    onDragStart: (e: React.DragEvent, lead: Lead) => void;
+    onDrop: (e: React.DragEvent, toStage: PipelineStage) => void;
+}) {
+    const [isDragOver, setIsDragOver] = useState(false);
     const label = PIPELINE_STAGE_LABELS[stage];
     const accent = STAGE_COLORS[stage];
 
@@ -109,14 +153,34 @@ function Column({ stage, leads, onSelectLead }: { stage: PipelineStage; leads: L
                 </button>
             </div>
 
-            <div className="bg-zinc-100/60 dark:bg-zinc-900/60 rounded-2xl p-2 flex-1 overflow-y-auto min-h-[100px]">
+            <div
+                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={(e) => { setIsDragOver(false); onDrop(e, stage); }}
+                className={clsx(
+                    "bg-zinc-100/60 dark:bg-zinc-900/60 rounded-2xl p-2 flex-1 overflow-y-auto min-h-[100px] transition-all",
+                    isDragOver && "ring-2 ring-indigo-400 dark:ring-indigo-500 bg-indigo-50/30 dark:bg-indigo-950/20",
+                )}
+            >
                 <div className="space-y-3 pb-20">
                     {leads.map((lead) => (
-                        <LeadCard key={lead.id} lead={lead} onSelect={onSelectLead} />
+                        <LeadCard
+                            key={lead.id}
+                            lead={lead}
+                            onSelect={onSelectLead}
+                            onDragStart={onDragStart}
+                        />
                     ))}
                     {leads.length === 0 && (
-                        <div className="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 opacity-50">
-                            <p className="text-xs text-[var(--text-secondary)]">No leads in this stage</p>
+                        <div className={clsx(
+                            "flex items-center justify-center h-24 rounded-xl border-2 border-dashed transition-colors",
+                            isDragOver
+                                ? "border-indigo-400 dark:border-indigo-500 opacity-80"
+                                : "border-zinc-200 dark:border-zinc-800 opacity-50",
+                        )}>
+                            <p className="text-xs text-[var(--text-secondary)]">
+                                {isDragOver ? 'Drop here' : 'No leads in this stage'}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -141,12 +205,57 @@ function ColumnSkeleton() {
 
 // ── Main Kanban Board ──────────────────────────────────────────────────────────
 export default function KanbanBoard() {
-    // ── Real data from DB ──────────────────────────────────────────────────
     const { data: leads = [], isLoading, isError } = useLeads();
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+    const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
+    const [mode, setMode] = useState<'all' | 'fresh' | 'my_leads'>('all');
+
+    const moveStage = useMoveLeadStage();
 
     // Subscribe to Supabase Realtime — new leads / AI score updates appear live
     useLeadsRealtime();
+
+    let currentUser: string | undefined;
+    try {
+        const token = getAuthToken();
+        const decoded = decodeJwt(token);
+        currentUser = decoded?.sub as string;
+    } catch { }
+
+    const filteredLeads = leads.filter(l => {
+        if (mode === 'fresh') return !l.isPicked;
+        if (mode === 'my_leads') return l.isPicked && l.pickedBy === currentUser;
+        return true;
+    });
+
+    // ── Drag handlers ──────────────────────────────────────────────────────
+    const handleDragStart = useCallback((e: React.DragEvent, lead: Lead) => {
+        const payload: DragPayload = { leadId: lead.id, fromStage: lead.pipelineStage };
+        e.dataTransfer.setData('application/json', JSON.stringify(payload));
+        e.dataTransfer.effectAllowed = 'move';
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent, toStage: PipelineStage) => {
+        e.preventDefault();
+        try {
+            const raw = e.dataTransfer.getData('application/json');
+            if (!raw) return;
+            const { leadId, fromStage } = JSON.parse(raw) as DragPayload;
+
+            // No-op if same column
+            if (fromStage === toStage) return;
+
+            // 1. Move stage (optimistic update built-in)
+            // also decode the token so backend can log the activity with the correct userId
+            const token = getAuthToken();
+            const decoded = decodeJwt(token);
+            const userId = decoded?.sub;
+
+            moveStage.mutate({ id: leadId, stage: toStage, userId });
+        } catch {
+            // Ignore invalid drag data
+        }
+    }, [moveStage]);
 
     return (
         <div className="h-full flex flex-col">
@@ -156,14 +265,34 @@ export default function KanbanBoard() {
                     <h1 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Admission Pipeline</h1>
                     <p className="text-[var(--text-secondary)] mt-1">
                         Live overview of all enquiries across their admission stages.
-                        {!isLoading && <span className="ml-2 font-medium">{leads.length} leads</span>}
+                        {!isLoading && <span className="ml-2 font-medium">{filteredLeads.length} leads</span>}
                     </p>
+                    <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 rounded-xl flex items-center gap-1 mt-6 w-max">
+                        <button
+                            onClick={() => setMode('all')}
+                            className={clsx("px-5 py-1.5 text-sm font-medium rounded-lg transition-all cursor-pointer", mode === 'all' ? "bg-white dark:bg-zinc-800 shadow-sm text-zinc-900 dark:text-zinc-100" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300")}
+                        >
+                            All Leads
+                        </button>
+                        <button
+                            onClick={() => setMode('fresh')}
+                            className={clsx("px-5 py-1.5 text-sm font-medium rounded-lg transition-all cursor-pointer", mode === 'fresh' ? "bg-white dark:bg-zinc-800 shadow-sm text-zinc-900 dark:text-zinc-100" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300")}
+                        >
+                            Fresh Leads
+                        </button>
+                        <button
+                            onClick={() => setMode('my_leads')}
+                            className={clsx("px-5 py-1.5 text-sm font-medium rounded-lg transition-all cursor-pointer", mode === 'my_leads' ? "bg-white dark:bg-zinc-800 shadow-sm text-zinc-900 dark:text-zinc-100" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300")}
+                        >
+                            My Leads
+                        </button>
+                    </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm">
-                        Filter
-                    </button>
-                    <button className="bg-[var(--bg-primary)] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-sm flex gap-2 items-center">
+                    <button
+                        onClick={() => setIsAddLeadOpen(true)}
+                        className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors shadow-lg shadow-zinc-900/20 flex items-center gap-2 cursor-pointer"
+                    >
                         <Plus className="w-4 h-4" />
                         Add Lead
                     </button>
@@ -185,16 +314,23 @@ export default function KanbanBoard() {
                         <Column
                             key={stage}
                             stage={stage}
-                            leads={leads.filter((l) => l.pipelineStage === stage)}
+                            leads={filteredLeads.filter((l) => l.pipelineStage === stage)}
                             onSelectLead={setSelectedLead}
+                            onDragStart={handleDragStart}
+                            onDrop={handleDrop}
                         />
                     ))}
             </div>
 
-            <LeadDetailSheet 
-                lead={selectedLead} 
-                open={!!selectedLead} 
-                onOpenChange={(open) => !open && setSelectedLead(null)} 
+            <LeadDetailSheet
+                lead={selectedLead}
+                open={!!selectedLead}
+                onOpenChange={(open) => !open && setSelectedLead(null)}
+            />
+
+            <AddLeadDialog
+                open={isAddLeadOpen}
+                onOpenChange={setIsAddLeadOpen}
             />
         </div>
     );
