@@ -29,7 +29,8 @@ function mapRealtimeLead(row: LeadApiResponse): Partial<Lead> {
         aiScore: row.aiScore ?? 0,
         predictedLTV: row.predictedLTV ?? 0,
         nextBestAction: row.nextBestAction ?? 'Follow up',
-        ownerId: row.ownerId ?? '',
+        isPicked: row.isPicked ?? false,
+        pickedBy: row.pickedBy ?? null,
         createdAt: row.createdAt ?? new Date().toISOString(),
         lastInteraction: row.lastInteraction ?? new Date().toISOString(),
         qualificationStatus: (row.qualificationStatus as Lead['qualificationStatus']) ?? 'New_Lead',
@@ -68,15 +69,33 @@ export function useLeadsRealtime() {
                     const updatedRow = payload.new as LeadApiResponse;
 
                     // Update cache immediately
-                    queryClient.setQueryData<Lead[]>(
+                    queryClient.setQueryData<any>(
                         queryKeys.leads.list(),
-                        (old) => {
+                        (old: any) => {
                             if (!old) return old;
-                            return old.map((lead) =>
-                                lead.id === updatedRow.id
-                                    ? { ...lead, ...mapRealtimeLead(updatedRow) }
-                                    : lead
-                            );
+                            
+                            // When using paginated hook or raw cache from useLeads
+                            if (old.leads && Array.isArray(old.leads)) {
+                                return {
+                                    ...old,
+                                    leads: old.leads.map((lead: any) =>
+                                        lead.id === updatedRow.id
+                                            ? { ...lead, ...mapRealtimeLead(updatedRow) }
+                                            : lead
+                                    )
+                                };
+                            }
+
+                            // Fallback if the cache is directly an array
+                            if (Array.isArray(old)) {
+                                return old.map((lead: any) =>
+                                    lead.id === updatedRow.id
+                                        ? { ...lead, ...mapRealtimeLead(updatedRow) }
+                                        : lead
+                                );
+                            }
+
+                            return old;
                         }
                     );
 

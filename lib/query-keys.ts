@@ -11,6 +11,10 @@ export const queryKeys = {
         list: (params?: unknown) => [...queryKeys.leads.all, 'list', params ?? {}] as const,
         detail: (id: string) => [...queryKeys.leads.all, 'detail', id] as const,
     },
+    activities: {
+        all: ['activities'] as const,
+        byLead: (leadId: string) => [...queryKeys.activities.all, 'lead', leadId] as const,
+    },
     campaigns: {
         all: ['campaigns'] as const,
         list: () => [...queryKeys.campaigns.all, 'list'] as const,
@@ -24,4 +28,3 @@ export const queryKeys = {
         stats: (period: string) => [...queryKeys.dashboard.all, 'stats', period] as const,
     },
 } as const;
-

@@ -88,8 +88,8 @@ export function useMoveLeadStage() {
     const { toast } = useToast();
 
     return useMutation({
-        mutationFn: ({ id, stage }: { id: string; stage: PipelineStage }) =>
-            leadsApi.moveStage(id, stage),
+        mutationFn: ({ id, stage, userId }: { id: string; stage: PipelineStage; userId?: string }) =>
+            leadsApi.moveStage(id, stage, userId),
 
         // ── Optimistic update ─────────────────────────────────────────────
         onMutate: async ({ id, stage }) => {
@@ -99,17 +99,28 @@ export function useMoveLeadStage() {
             // Snapshot the previous leads list (any params variant)
             const previousData = queryClient.getQueriesData<{ leads: any[] }>({ queryKey: queryKeys.leads.all });
 
-            // Optimistically update all cached lead lists
-            queryClient.setQueriesData<{ leads: any[]; total: number; totalPages: number }>(
+            // Optimistically update all cached lead lists AND single lead details
+            queryClient.setQueriesData<any>(
                 { queryKey: queryKeys.leads.all },
-                (old) => {
+                (old: any) => {
                     if (!old) return old;
-                    return {
-                        ...old,
-                        leads: old.leads.map((lead) =>
-                            lead.id === id ? { ...lead, pipelineStage: stage } : lead
-                        ),
-                    };
+                    
+                    // Case 1: Paginated view (useLeads / useLeadsPaginated)
+                    if (Array.isArray(old.leads)) {
+                        return {
+                            ...old,
+                            leads: old.leads.map((lead: any) =>
+                                lead.id === id ? { ...lead, pipelineStage: stage } : lead
+                            ),
+                        };
+                    }
+                    
+                    // Case 2: Single lead view (useLeadById / LeadDetailSheet)
+                    if (old.id === id) {
+                        return { ...old, pipelineStage: stage };
+                    }
+                    
+                    return old;
                 }
             );
 
@@ -153,5 +164,49 @@ export function useDeleteLead() {
         onError: (error: Error) => {
             toast({ title: 'Error', description: error.message || 'Failed to delete lead.', variant: 'destructive' });
         },
+    });
+}
+
+/**
+ * Pick a lead (assign to current user).
+ */
+export function usePickLead() {
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+
+    return useMutation({
+        mutationFn: ({ id, userId }: { id: string; userId: string }) => leadsApi.pickLead(id, userId),
+        onMutate: async ({ id, userId }) => {
+            await queryClient.cancelQueries({ queryKey: queryKeys.leads.all });
+            const previousData = queryClient.getQueriesData<{ leads: any[] }>({ queryKey: queryKeys.leads.all });
+
+            queryClient.setQueriesData<{ leads: any[]; total: number }>(
+                { queryKey: queryKeys.leads.all },
+                (old) => {
+                    if (!old || !old.leads) return old;
+                    const newLeads = old.leads.map(l => 
+                        l.id === id ? { ...l, isPicked: true, pickedBy: userId, ownerId: userId } : l
+                    );
+                    return { ...old, leads: newLeads };
+                }
+            );
+
+            return { previousData };
+        },
+        onError: (err: Error, variables, context) => {
+            if (context?.previousData) {
+                context.previousData.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            toast({ title: 'Error', description: err.message || 'Someone else might have picked this lead already.', variant: 'destructive' });
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.leads.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.activities.all });
+        },
+        onSuccess: () => {
+            toast({ title: 'Success', description: 'Lead assigned to you.', duration: 2000 });
+        }
     });
 }

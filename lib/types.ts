@@ -101,12 +101,13 @@ export interface Lead {
     type: LeadType;
     dealValue: number;
     // Ownership
-    ownerId: string;
+    isPicked: boolean;
+    pickedBy: string | null;
+    createdBy?: string | null;
     nextFollowUp?: string;
     createdAt: string;
     lastInteraction: string;
     // Relations (optional, only on detail views)
-    owner?: Pick<User, 'id' | 'username' | 'avatar'> | null;
     leadNotes?: LeadNote[];
     activities?: Activity[];
 }

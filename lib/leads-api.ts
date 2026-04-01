@@ -1,5 +1,6 @@
 import { apiFetch } from './http-client';
-import { Lead, PipelineStage } from './types';
+import { Lead, Activity, PipelineStage } from './types';
+import { ActivityApiResponse } from './activities-api';
 
 /**
  * Raw shape returned by crm-core-server (Prisma output).
@@ -19,7 +20,9 @@ export interface LeadApiResponse {
     aiScore?: number;
     predictedLTV?: number;
     nextBestAction?: string | null;
-    ownerId?: string | null;
+    isPicked?: boolean;
+    pickedBy?: string | null;
+    createdBy?: string | null;
     createdAt?: string;
     lastInteraction?: string;
     qualificationStatus?: string | null;
@@ -27,7 +30,7 @@ export interface LeadApiResponse {
     dealValue?: number;
     type?: string | null;
     nextFollowUp?: string | null;
-    owner?: { id: string; username?: string | null; avatar?: string | null } | null;
+    activities?: ActivityApiResponse[];
 }
 
 /** Paginated response shape for GET /get-all-leads */
@@ -54,7 +57,9 @@ function mapLead(raw: LeadApiResponse): Lead {
         aiScore: raw.aiScore ?? 0,
         predictedLTV: raw.predictedLTV ?? 0,
         nextBestAction: raw.nextBestAction ?? 'Follow up',
-        ownerId: raw.ownerId ?? '',
+        isPicked: raw.isPicked ?? false,
+        pickedBy: raw.pickedBy ?? null,
+        createdBy: raw.createdBy ?? null,
         createdAt: raw.createdAt ?? new Date().toISOString(),
         lastInteraction: raw.lastInteraction ?? new Date().toISOString(),
         qualificationStatus: (raw.qualificationStatus as Lead['qualificationStatus']) ?? 'New_Lead',
@@ -62,7 +67,14 @@ function mapLead(raw: LeadApiResponse): Lead {
         type: (raw.type as Lead['type']) ?? 'Cold',
         dealValue: raw.dealValue ?? 0,
         nextFollowUp: raw.nextFollowUp ?? undefined,
-        owner: raw.owner ?? null,
+        activities: (raw.activities ?? []).map((a) => ({
+            id: a.id,
+            leadId: a.leadId ?? raw.id,
+            userId: a.userId ?? 'system',
+            type: a.type,
+            description: a.description ?? '',
+            timestamp: a.timestamp,
+        } satisfies Activity)),
     };
 }
 
@@ -75,6 +87,8 @@ export interface GetAllLeadsParams {
     search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+    isPicked?: boolean;
+    pickedBy?: string;
 }
 
 export const leadsApi = {
@@ -92,6 +106,8 @@ export const leadsApi = {
         if (params?.search) qs.set('search', params.search);
         if (params?.sortBy) qs.set('sortBy', params.sortBy);
         if (params?.sortOrder) qs.set('sortOrder', params.sortOrder);
+        if (params?.isPicked !== undefined) qs.set('isPicked', String(params.isPicked));
+        if (params?.pickedBy) qs.set('pickedBy', params.pickedBy);
 
         const query = qs.toString() ? `?${qs.toString()}` : '';
         const res = await apiFetch<LeadsPageResponse>(`/get-all-leads${query}`);
@@ -137,10 +153,22 @@ export const leadsApi = {
      * PATCH /api/v1/leads/:id/stage
      * Dedicated Kanban drag-end — moves the lead to a new pipeline stage.
      */
-    moveStage: async (id: string, stage: PipelineStage): Promise<Lead> => {
+    moveStage: async (id: string, stage: PipelineStage, userId?: string): Promise<Lead> => {
         const data = await apiFetch<LeadApiResponse>(`/leads/${id}/stage`, {
             method: 'PATCH',
-            body: { stage },
+            body: { stage, userId },
+        });
+        return mapLead(data);
+    },
+
+    /**
+     * PATCH /api/v1/leads/:id/pick
+     * Picks a lead (assigns it to the user).
+     */
+    pickLead: async (id: string, userId: string): Promise<Lead> => {
+        const data = await apiFetch<LeadApiResponse>(`/leads/${id}/pick`, {
+            method: 'PATCH',
+            body: { userId },
         });
         return mapLead(data);
     },
