@@ -17,12 +17,21 @@ import {
     User,
     BadgeCheck,
     CheckCircle2,
+    Phone,
+    ChevronDown,
 } from 'lucide-react';
 
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { navigationPaths } from '@/lib/navigation';
 import { useSignup } from '@/hooks/use-auth';
 
@@ -31,21 +40,34 @@ const signupSchema = z.object({
     username: z
         .string()
         .min(2, 'Name must be at least 2 characters')
-        .max(50, 'Name too long')
-        .regex(/^[a-zA-Z\s]+$/, 'Only letters and spaces allowed'),
+        .max(30, 'Name too long')
+        .trim()
+        .toLowerCase()
+        .regex(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces'),
 
-    email: z.string().email('Enter a valid email').toLowerCase().trim(),
+    contact: z.string()
+        .min(10, 'Contact must be at least 10 digits')
+        .max(20, 'Contact is too long')
+        .regex(/^[0-9]+$/, 'Contact can only contain numbers'),
+
+    email: z.string()
+        .email('Enter a valid email')
+        .toLowerCase()
+        .trim(),
+
+    role: z.enum(['admin', 'manager', 'executive']),
 
     password: z
         .string()
-        .min(6, 'Password must be at least 6 characters')
-        .max(30, 'Password too long'),
+        .min(8, "Password Must Be 8 Characters Long")
+        .regex(/[A-Z]/, "Password Must Contain At Least 1 Uppercase Letter")
+        .regex(/[a-z]/, "Password Must Contain At Least 1 Lowercase Letter")
+        .regex(/[0-9]/, "Password Must Contain At Least 1 Number")
+        .regex(/[^\w]/, "Password Must Contain At Least 1 Special Character")
+        .max(20, "Password cannot be more than 20 characters")
+        .trim(),
 
-    confirmPassword: z.string(),
-
-    gender: z.enum(['male', 'female', 'other']),
-
-    role: z.enum(['admin', 'manager', 'executive']),
+    confirmPassword: z.string()
 }).refine((d) => d.password === d.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
@@ -96,18 +118,22 @@ function SelectField({
             <Label htmlFor={id} className="text-sm font-semibold text-foreground">
                 {label}
             </Label>
-            <select
-                id={id}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                disabled={disabled}
-                className="w-full h-11 px-3 rounded-xl border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:opacity-50 cursor-pointer"
-            >
-                <option value="" disabled>{placeholder}</option>
-                {options.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-            </select>
+            <Select value={value} onValueChange={onChange} disabled={disabled}>
+                <SelectTrigger id={id} className="w-full h-11 px-3 rounded-xl border border-border bg-background text-foreground text-sm focus:ring-0 focus:ring-offset-0 transition-all hover:bg-zinc-800/50 cursor-pointer">
+                    <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border border-border bg-background text-foreground">
+                    {options.map((o) => (
+                        <SelectItem
+                            key={o.value}
+                            value={o.value}
+                            className="cursor-pointer hover:bg-blue-500/10 focus:bg-blue-500/10 focus:text-blue-500 rounded-lg transition-colors"
+                        >
+                            {o.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
             {error && <p className="text-destructive text-xs font-medium">{error}</p>}
         </div>
     );
@@ -133,7 +159,7 @@ export function SignupForm() {
             email: '',
             password: '',
             confirmPassword: '',
-            gender: 'other',
+            contact: '',
             role: 'executive',
         },
     });
@@ -196,11 +222,11 @@ export function SignupForm() {
                                     <Input
                                         id="username"
                                         type="text"
-                                        placeholder="e.g. John Doe"
+                                        placeholder="John Doe"
                                         autoComplete="name"
                                         {...register('username')}
                                         disabled={isLoading}
-                                        className="h-11 pl-10 rounded-xl bg-background border-border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 transition-all"
+                                        className="h-11 pl-10 rounded-xl bg-background border-border focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                                     />
                                 </div>
                                 {errors.username && (
@@ -222,7 +248,7 @@ export function SignupForm() {
                                         autoComplete="email"
                                         {...register('email')}
                                         disabled={isLoading}
-                                        className="h-11 pl-10 rounded-xl bg-background border-border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 transition-all"
+                                        className="h-11 pl-10 rounded-xl bg-background border-border focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                                     />
                                 </div>
                                 {errors.email && (
@@ -230,8 +256,26 @@ export function SignupForm() {
                                 )}
                             </div>
 
-                            {/* Role + Gender — two columns */}
+                            {/* Role + Contact — two columns */}
                             <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="contact" className="text-sm font-semibold text-foreground">
+                                        Phone Number
+                                    </Label>
+                                    <div className="relative">
+                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                        <Input
+                                            id="contact"
+                                            {...register('contact')}
+                                            className="h-11 pl-10 rounded-xl bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
+                                            placeholder="9876543210"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                    {errors.contact && (
+                                        <p className="text-destructive text-xs font-medium">{errors.contact.message}</p>
+                                    )}
+                                </div>
                                 <Controller
                                     name="role"
                                     control={control}
@@ -245,29 +289,9 @@ export function SignupForm() {
                                             disabled={isLoading}
                                             error={errors.role?.message}
                                             options={[
-                                                { value: 'admin', label: '⚡ Admin' },
-                                                { value: 'manager', label: '📊 Manager' },
-                                                { value: 'executive', label: '🎯 Executive' },
-                                            ]}
-                                        />
-                                    )}
-                                />
-                                <Controller
-                                    name="gender"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <SelectField
-                                            id="gender"
-                                            label="Gender"
-                                            placeholder="Select"
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            disabled={isLoading}
-                                            error={errors.gender?.message}
-                                            options={[
-                                                { value: 'male', label: 'Male' },
-                                                { value: 'female', label: 'Female' },
-                                                { value: 'other', label: 'Other' },
+                                                { value: 'admin', label: 'Admin' },
+                                                { value: 'manager', label: 'Manager' },
+                                                { value: 'executive', label: 'Executive' },
                                             ]}
                                         />
                                     )}
@@ -284,11 +308,11 @@ export function SignupForm() {
                                     <Input
                                         id="password"
                                         type={showPassword ? 'text' : 'password'}
-                                        placeholder="Min. 6 characters"
+                                        placeholder="Create a Strong Password"
                                         autoComplete="new-password"
                                         {...register('password')}
                                         disabled={isLoading}
-                                        className="h-11 pl-10 pr-11 rounded-xl bg-background border-border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 transition-all"
+                                        className="h-11 pl-10 pr-11 rounded-xl bg-background border-border focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                                     />
                                     <button
                                         type="button"
@@ -318,7 +342,7 @@ export function SignupForm() {
                                         autoComplete="new-password"
                                         {...register('confirmPassword')}
                                         disabled={isLoading}
-                                        className="h-11 pl-10 pr-11 rounded-xl bg-background border-border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 transition-all"
+                                        className="h-11 pl-10 pr-11 rounded-xl bg-background border-border focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                                     />
                                     <button
                                         type="button"
@@ -376,7 +400,7 @@ export function SignupForm() {
                             href="/"
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            ← Back to Nexus AI
+                            ← Back to Home
                         </Link>
                     </p>
                 </motion.div>
@@ -387,7 +411,7 @@ export function SignupForm() {
                 initial={{ opacity: 0, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                className="hidden lg:flex flex-1 relative flex-col p-14 overflow-hidden"
+                className="hidden lg:flex flex-1 relative flex-col p-14 pl-30 overflow-hidden"
                 style={{
                     background: 'linear-gradient(145deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
                 }}
@@ -413,7 +437,12 @@ export function SignupForm() {
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
                             <span className="text-zinc-900 font-black text-lg">N</span>
                         </div>
-                        <span className="text-white text-2xl font-bold tracking-tight">Nexus AI</span>
+                        <Link
+                            href="/"
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            <span className="text-white text-2xl font-bold tracking-tight">Nexus AI</span>
+                        </Link>
                     </div>
 
                     {/* Hero copy */}
@@ -495,7 +524,7 @@ export function SignupForm() {
                         className="relative z-10 border-t border-white/10 pt-8"
                     >
                         <p className="text-white/50 text-sm italic">
-                            &quot;We closed 40% more deals in the first month with Nexus AI.&quot;
+                            &quot;We closed 20% more deals in the first month with Nexus AI.&quot;
                         </p>
                         <p className="text-white/30 text-xs mt-2">— Head of Sales, EdTech Pvt. Ltd.</p>
                     </motion.div>

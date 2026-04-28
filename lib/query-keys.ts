@@ -27,4 +27,8 @@ export const queryKeys = {
         all: ['dashboard'] as const,
         stats: (period: string) => [...queryKeys.dashboard.all, 'stats', period] as const,
     },
+    users: {
+        all: ['users'] as const,
+        profile: (id: string) => [...queryKeys.users.all, 'profile', id] as const,
+    },
 } as const;

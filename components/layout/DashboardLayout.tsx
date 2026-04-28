@@ -27,6 +27,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ThemeToggle } from '@/components/theme-toggle'
 import { navigationPaths } from '@/lib/navigation'
 import { getCookie, decodeJwt } from "@/lib/utils"
+import { ProfileModal } from '@/components/profile/ProfileModal'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -67,6 +68,10 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
   const token = getCookie("token")
   const decoded = decodeJwt(token)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [profileOpen, setProfileOpen] = useState(false)
+
+  // Extract user's database ID from JWT sub claim
+  const userId = (decoded?.sub as string) ?? null
 
   const displayName = decoded?.username || decoded?.email || 'User'
   const roleLabel = userRole
@@ -92,8 +97,8 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
 
         {/* Logo */}
         <div className="h-16 flex items-center gap-3 px-5 shrink-0">
-          <div className="w-8 h-8 bg-[var(--text-primary)] rounded-lg flex items-center justify-center shadow-sm shrink-0">
-            <span className="text-[var(--bg-card)] font-bold text-sm">N</span>
+          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-rose-500 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
+            <span className="text-white font-bold text-sm">N</span>
           </div>
           {sidebarOpen && (
             <span className="text-base font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap">
@@ -114,15 +119,18 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
                 href={item.url}
                 title={!sidebarOpen ? item.title : undefined}
                 className={clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
                   isActive
-                    ? "bg-zinc-100 dark:bg-zinc-800 text-[var(--text-primary)]"
-                    : "text-[var(--text-secondary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-[var(--text-primary)]"
+                    ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 shadow-sm shadow-indigo-100/50 dark:shadow-none"
+                    : "text-[var(--text-secondary)] hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-[var(--text-primary)] hover:translate-x-1"
                 )}
               >
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-600 dark:bg-indigo-500 rounded-r-full shadow-[0_0_8px_rgba(79,70,229,0.5)]" />
+                )}
                 <item.icon className={clsx(
                   "w-4 h-4 shrink-0 transition-colors",
-                  isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
+                  isActive ? "text-indigo-700 dark:text-indigo-400" : "text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
                 )} />
                 {sidebarOpen && <span className="truncate">{item.title}</span>}
               </Link>
@@ -135,7 +143,7 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className={clsx(
-                "w-full flex items-center gap-3 px-2 py-2 rounded-lg",
+                "w-full flex items-center gap-3 px-2 py-2 rounded-xl outline-none focus:outline-none focus:ring-0",
                 "hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer",
                 !sidebarOpen && "justify-center"
               )}>
@@ -153,18 +161,22 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
                 {sidebarOpen && <ChevronUp className="w-4 h-4 text-[var(--text-secondary)] shrink-0" />}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-lg" side="top" align="end" sideOffset={4}>
-              <DropdownMenuItem>
-                <User className="w-4 h-4 mr-2" />
-                Profile
+            <DropdownMenuContent className="w-56 rounded-2xl p-2 shadow-xl border-border/60" side="top" align="end" sideOffset={8}>
+              <DropdownMenuItem
+                className="rounded-xl py-2.5 cursor-pointer"
+                onClick={() => setProfileOpen(true)}
+              >
+                <User className="w-4 h-4 mr-3 text-muted-foreground" />
+                <span className="font-medium">Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => logout()} className="text-rose-600 focus:text-rose-600">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
+              {/* <DropdownMenuItem className="rounded-xl py-2.5 cursor-pointer">
+                <Settings className="w-4 h-4 mr-3 text-muted-foreground" />
+                <span className="font-medium">Settings</span>
+              </DropdownMenuItem> */}
+              <div className="h-px bg-border/50 my-1 mx-2" />
+              <DropdownMenuItem onClick={() => logout()} className="text-rose-600 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-500/10 rounded-xl py-2.5 cursor-pointer">
+                <LogOut className="w-4 h-4 mr-3" />
+                <span className="font-medium">Logout</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -200,10 +212,10 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
           {/* Right */}
           <div className="flex items-center gap-1 shrink-0">
             <ThemeToggle />
-            <button className="relative p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors rounded-full">
+            {/* <button className="relative p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors rounded-full">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-[var(--bg-card)]" />
-            </button>
+            </button> */}
           </div>
         </header>
 
@@ -214,6 +226,13 @@ export function DashboardLayout({ children, userRole }: DashboardLayoutProps) {
           </div>
         </main>
       </div>
+
+      {/* ── Profile Modal ─────────────────────────────────────── */}
+      <ProfileModal
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        userId={userId}
+      />
     </div>
   )
 }

@@ -17,14 +17,14 @@ export default function Footer() {
               <span className="text-xl font-bold tracking-tight text-primary">Nexus AI</span>
             </div>
             <p className="text-foreground/70 leading-relaxed">
-              Empowering the future of loan distribution with technology and innovation.
+              Everything you need to capture, qualify, and close — without the CRM bloat.
             </p>
           </div>
 
           {[
             {
               title: "Company",
-              links: ["For Aggregators", "About Us", "Contact"],
+              links: ["About Us", "Contact"],
             },
             {
               title: "Legal",
@@ -74,7 +74,7 @@ export default function Footer() {
         </div>
 
         <div className="border-border/10 pt-8 text-center text-foreground">
-          <p>&copy; 2025 Nexus AI. All rights reserved. Built for the future of financial services.</p>
+          <p>&copy; 2026 Nexus AI. All rights reserved.</p>
         </div>
       </div>
     </div>

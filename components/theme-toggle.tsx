@@ -40,6 +40,7 @@ export function ThemeToggle() {
         hover:text-foreground
         hover:bg-muted
         transition-colors
+        cursor-pointer
       "
         >
             {/* Sun */}

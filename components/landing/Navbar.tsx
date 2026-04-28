@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { navigationPaths } from "@/lib/navigation";
 
 export default function Navbar() {
@@ -39,6 +40,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Link href={navigationPaths.login}>
             <Button
               variant="outline"

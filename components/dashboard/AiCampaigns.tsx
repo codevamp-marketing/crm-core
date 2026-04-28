@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Rocket, TrendingUp, Users, DollarSign, Target, Zap, MousePointer, BarChart2 } from 'lucide-react';
+import { Rocket, TrendingUp, Users, DollarSign, Target, Zap, MousePointer, BarChart2, IndianRupee } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Campaign } from '@/lib/types';
 // import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
@@ -9,7 +9,7 @@ import { Campaign } from '@/lib/types';
 const MOCK_CAMPAIGNS: Campaign[] = [
     {
         id: 'c1',
-        name: 'B.Tech Admissions 2025',
+        name: 'B.Tech Admissions 2026',
         platform: 'Google',
         status: 'Active',
         budget: 120000,
@@ -69,7 +69,7 @@ const MOCK_CAMPAIGNS: Campaign[] = [
     },
     {
         id: 'c6',
-        name: 'Distance Learning 2025',
+        name: 'Distance Learning 2026',
         platform: 'Google',
         status: 'Active',
         budget: 70000,
@@ -108,7 +108,7 @@ export default function AICampaigns() {
                     <div>
                         <h3 className="text-lg font-bold mb-1">AI Optimization Insight</h3>
                         <p className="text-indigo-100 text-sm leading-relaxed max-w-2xl">
-                            Your "B.Tech Admissions 2025" campaign is outperforming others by 38%.
+                            Your "B.Tech Admissions 2026" campaign is outperforming others by 32%.
                             AI recommends reallocating ₹12,000 from "BCA / MCA Awareness" to scale Google Ads for B.Tech engineering leads and maximize enrollment conversions.
                         </p>
                         <button className="mt-4 px-4 py-2 bg-white text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-50 transition-colors">
@@ -170,9 +170,9 @@ export default function AICampaigns() {
                             </div>
                             <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
                                 <p className="text-xs text-[var(--text-secondary)] mb-1 flex items-center gap-1">
-                                    <DollarSign className="w-3 h-3" /> Spent
+                                    <IndianRupee className="w-3 h-3" /> Spent
                                 </p>
-                                <p className="text-lg font-bold text-[var(--text-primary)]">${campaign.spent.toLocaleString()}</p>
+                                <p className="text-lg font-bold text-[var(--text-primary)]">&#8377;{campaign.spent.toLocaleString()}</p>
                             </div>
                         </div>
 
@@ -181,7 +181,7 @@ export default function AICampaigns() {
                                 <div className="w-24 h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                                     <div className="h-full bg-[var(--text-primary)] rounded-full" style={{ width: `${(campaign.spent / campaign.budget) * 100}%` }}></div>
                                 </div>
-                                <span className="text-xs text-[var(--text-secondary)]">${campaign.budget - campaign.spent} remaining</span>
+                                <span className="text-xs text-[var(--text-secondary)]">&#8377;{campaign.budget - campaign.spent} remaining</span>
                             </div>
                             <button className="text-sm font-medium text-[var(--text-primary)] hover:text-indigo-600 transition-colors">
                                 View Details

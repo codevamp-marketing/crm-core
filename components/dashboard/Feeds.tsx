@@ -24,8 +24,8 @@ const MOCK_FEEDS: FeedItem[] = [
     {
         id: 'f1',
         type: 'Social_Post',
-        title: 'Applications Open for B.Tech 2025 – Invertis University',
-        content: 'Unlock your engineering future! Invertis University is now accepting applications for B.Tech 2025-26. Industry-aligned curriculum, top placements, and vibrant campus life await. Apply now! #BTech #Engineering #InvertisUniversity',
+        title: 'Applications Open for B.Tech 2026 – Invertis University',
+        content: 'Unlock your engineering future! Invertis University is now accepting applications for B.Tech 2026-26. Industry-aligned curriculum, top placements, and vibrant campus life await. Apply now! #BTech #Engineering #InvertisUniversity',
         platform: 'Instagram',
         url: 'https://www.invertisuniversity.ac.in/academics',
         timestamp: subDays(new Date(), 1).toISOString(),
@@ -35,7 +35,7 @@ const MOCK_FEEDS: FeedItem[] = [
     {
         id: 'f2',
         type: 'Blog_Article',
-        title: 'Why Choose Invertis University for Your MBA in 2025?',
+        title: 'Why Choose Invertis University for Your MBA in 2026?',
         content: 'Discover how Invertis University MBA program blends global business insights with hands-on industry exposure. From live projects to corporate tie-ups, our graduates lead the way.',
         platform: 'Website',
         url: 'https://www.invertisuniversity.ac.in/academics',
@@ -58,7 +58,7 @@ const MOCK_FEEDS: FeedItem[] = [
         id: 'f4',
         type: 'SEO_Page',
         title: 'Best Engineering College in Bareilly – Invertis University',
-        content: 'Landing page targeting "best engineering college Bareilly 2025" – showcasing NAAC accreditation, placement records, and scholarship programs at Invertis University.',
+        content: 'Landing page targeting "best engineering college Bareilly 2026" – showcasing NAAC accreditation, placement records, and scholarship programs at Invertis University.',
         platform: 'Website',
         url: 'https://www.invertisuniversity.ac.in/academics',
         timestamp: subDays(new Date(), 12).toISOString(),
@@ -68,7 +68,7 @@ const MOCK_FEEDS: FeedItem[] = [
     {
         id: 'f5',
         type: 'Social_Post',
-        title: 'Scholarship Opportunities at Invertis University 2025',
+        title: 'Scholarship Opportunities at Invertis University 2026',
         content: 'Meritorious students can avail up to 100% scholarship! Do not let finances stop your dreams. Explore scholarship options at Invertis University today. #Scholarship #HigherEducation',
         platform: 'Facebook',
         url: 'https://www.invertisuniversity.ac.in',
@@ -79,8 +79,8 @@ const MOCK_FEEDS: FeedItem[] = [
     {
         id: 'f6',
         type: 'Blog_Article',
-        title: 'Top Placement Recruiters at Invertis University – Batch 2024',
-        content: 'With 500+ recruiters on campus and average packages touching 6 LPA, see why Invertis University is the preferred choice for students across UP and Uttarakhand.',
+        title: 'Top Placement Recruiters at Invertis University – Batch 2025',
+        content: 'With 100+ recruiters on campus and average packages touching 6 LPA, see why Invertis University is the preferred choice for students across UP and Uttarakhand.',
         platform: 'LinkedIn',
         url: 'https://www.invertisuniversity.ac.in',
         timestamp: subDays(new Date(), 6).toISOString(),
