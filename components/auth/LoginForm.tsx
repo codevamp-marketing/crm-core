@@ -113,8 +113,8 @@ export function LoginForm() {
             const role = decoded?.role as string | undefined;
 
             toast({
-                title: 'Welcome back! 👋',
-                description: response.message || 'Logged in successfully.',
+                title: 'Welcome back!',
+                description: response.message || 'Log in successful.',
             });
 
             // ── Redirect: honour ?from= param, else fall back to role dashboard
@@ -173,7 +173,12 @@ export function LoginForm() {
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
                             <span className="text-zinc-900 font-black text-lg">N</span>
                         </div>
-                        <span className="text-white text-2xl font-bold tracking-tight">Nexus AI</span>
+                        <Link
+                            href="/"
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            <span className="text-white text-2xl font-bold tracking-tight">Nexus AI</span>
+                        </Link>
                     </div>
 
                     {/* Hero copy */}
@@ -243,9 +248,9 @@ export function LoginForm() {
                         className="relative z-10 border-t border-white/10 pt-8"
                     >
                         <p className="text-white/50 text-sm italic">
-                            &quot;Nexus AI cut our lead response time from 4 hours to 8 minutes.&quot;
+                            &quot;Nexus AI cut our lead response time from 4 hours to 40 minutes.&quot;
                         </p>
-                        <p className="text-white/30 text-xs mt-2">— VP Sales, FinServ Pvt. Ltd.</p>
+                        <p className="text-white/30 text-xs mt-2">— CEO, F2Fintech Pvt. Ltd.</p>
                     </motion.div>
                 </div>
             </motion.div>
@@ -303,7 +308,7 @@ export function LoginForm() {
                                         placeholder="you@company.com"
                                         {...register('email')}
                                         disabled={isLoading}
-                                        className="h-11 pl-10 rounded-xl bg-background border-border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 focus-visible:border-blue-500 transition-all"
+                                        className="h-11 pl-10 rounded-xl bg-background border-border focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                                     />
                                 </div>
                                 {errors.email && (
@@ -335,7 +340,7 @@ export function LoginForm() {
                                         placeholder="••••••••"
                                         {...register('password')}
                                         disabled={isLoading}
-                                        className="h-11 pl-10 pr-11 rounded-xl bg-background border-border focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 focus-visible:border-blue-500 transition-all"
+                                        className="h-11 pl-10 pr-11 rounded-xl bg-background border-border focus-visible:ring-0 focus-visible:ring-offset-0 transition-all"
                                     />
                                     <button
                                         type="button"
@@ -400,7 +405,7 @@ export function LoginForm() {
                             href="/"
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            ← Back to Nexus AI
+                            ← Back to Home
                         </Link>
                     </p>
                 </motion.div>

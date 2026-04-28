@@ -15,6 +15,12 @@ import { useActivitiesRealtime } from '@/hooks/use-activities-realtime';
 import { useToast } from '@/hooks/use-toast';
 import { getAuthToken } from '@/lib/http-client';
 import { decodeJwt } from '@/lib/utils';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface LeadDetailSheetProps {
     /** The lead stub from the list (for instant render before detail loads) */
@@ -127,7 +133,7 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                     </div>
                     <button
                         onClick={() => onOpenChange(false)}
-                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors border border-zinc-200 dark:border-zinc-700"
+                        className="p-2 rounded-full text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 transition-colors border border-zinc-200 dark:border-zinc-700 hover:border-red-200 dark:hover:border-red-900/50 cursor-pointer"
                     >
                         <X className="w-4 h-4" />
                     </button>
@@ -178,6 +184,7 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                             {
                                 icon: Mail,
                                 label: 'Email',
+                                tooltip: 'Open default email client',
                                 action: () => {
                                     if (lead.email) window.location.href = `mailto:${lead.email}`;
                                     else toast({ title: "Missing info", description: "No email address for this lead.", variant: "destructive", duration: 2000 });
@@ -186,6 +193,7 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                             {
                                 icon: Phone,
                                 label: 'Call',
+                                tooltip: 'Initiate phone call',
                                 action: () => {
                                     if (lead.phone) window.location.href = `tel:+91${lead.phone.replace(/[^0-9]/g, '')}`;  // fallback default to IN dial code, assuming it's India numbers as seen in previous steps
                                     else toast({ title: "Missing info", description: "No phone number for this lead.", variant: "destructive", duration: 2000 });
@@ -194,6 +202,7 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                             {
                                 icon: Calendar,
                                 label: 'Meeting',
+                                tooltip: 'Schedule Google Meet',
                                 action: () => {
                                     const title = encodeURIComponent(`Meeting with ${lead.name || 'Student'}`);
                                     const details = encodeURIComponent(`Discussing admission.\n\nLead: ${lead.name || 'Unknown'}\nPhone: ${lead.phone || 'N/A'}\nCourse: ${lead.course || 'N/A'}`);
@@ -202,13 +211,22 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                                     window.open(url, '_blank');
                                 }
                             },
-                        ].map(({ icon: Icon, label, action }) => (
-                            <button key={label} onClick={action} className="cursor-pointer flex flex-col items-center justify-center gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-900 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all group">
-                                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full group-hover:bg-zinc-900 dark:group-hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 group-hover:text-white transition-colors">
-                                    <Icon className="w-4 h-4" />
-                                </div>
-                                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200">{label}</span>
-                            </button>
+                        ].map(({ icon: Icon, label, tooltip, action }) => (
+                            <TooltipProvider key={label}>
+                                <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                        <button onClick={action} className="cursor-pointer flex flex-col items-center justify-center gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-900 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all group">
+                                            <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full group-hover:bg-zinc-900 dark:group-hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 group-hover:text-white transition-colors">
+                                                <Icon className="w-4 h-4" />
+                                            </div>
+                                            <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200">{label}</span>
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{tooltip}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         ))}
                     </div>
 
@@ -220,37 +238,55 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                             <div className="space-y-4">
                                 <div className="flex items-center gap-4 text-sm">
                                     <Mail className="w-4 h-4 text-zinc-400 shrink-0" />
-                                    <span
-                                        className={clsx(
-                                            "text-zinc-900 dark:text-zinc-100 break-all transition-colors",
-                                            lead.email && "cursor-pointer hover:text-indigo-500 hover:underline"
-                                        )}
-                                        onClick={() => {
-                                            if (!lead.email) return;
-                                            navigator.clipboard.writeText(lead.email);
-                                            toast({ title: "Copied!", description: "Email copied to clipboard.", duration: 2000 });
-                                        }}
-                                        title={lead.email ? "Click to copy email" : ""}
-                                    >
-                                        {lead.email || '—'}
-                                    </span>
+                                    {lead.email ? (
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={300}>
+                                                <TooltipTrigger asChild>
+                                                    <span
+                                                        className="text-zinc-900 dark:text-zinc-100 break-all transition-colors cursor-pointer hover:text-indigo-500 hover:underline"
+                                                        onClick={() => {
+                                                            if (!lead.email) return;
+                                                            navigator.clipboard.writeText(lead.email);
+                                                            toast({ title: "Copied!", description: "Email copied to clipboard.", duration: 2000 });
+                                                        }}
+                                                    >
+                                                        {lead.email}
+                                                    </span>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Click to copy email</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    ) : (
+                                        <span className="text-zinc-900 dark:text-zinc-100">—</span>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-4 text-sm">
                                     <Phone className="w-4 h-4 text-zinc-400 shrink-0" />
-                                    <span
-                                        className={clsx(
-                                            "text-zinc-900 dark:text-zinc-100 transition-colors",
-                                            lead.phone && "cursor-pointer hover:text-indigo-500 hover:underline"
-                                        )}
-                                        onClick={() => {
-                                            if (!lead.phone) return;
-                                            navigator.clipboard.writeText(lead.phone);
-                                            toast({ title: "Copied!", description: "Phone number copied to clipboard.", duration: 2000 });
-                                        }}
-                                        title={lead.phone ? "Click to copy phone number" : ""}
-                                    >
-                                        +91-{lead.phone || '—'}
-                                    </span>
+                                    {lead.phone ? (
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={300}>
+                                                <TooltipTrigger asChild>
+                                                    <span
+                                                        className="text-zinc-900 dark:text-zinc-100 transition-colors cursor-pointer hover:text-indigo-500 hover:underline"
+                                                        onClick={() => {
+                                                            if (!lead.phone) return;
+                                                            navigator.clipboard.writeText(lead.phone);
+                                                            toast({ title: "Copied!", description: "Phone number copied to clipboard.", duration: 2000 });
+                                                        }}
+                                                    >
+                                                        +91-{lead.phone}
+                                                    </span>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Click to copy phone number</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    ) : (
+                                        <span className="text-zinc-900 dark:text-zinc-100">—</span>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-4 text-sm mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                                     <UserIcon className="w-4 h-4 text-zinc-400 shrink-0" />
@@ -259,24 +295,33 @@ export function LeadDetailSheet({ lead: stubLead, open, onOpenChange }: LeadDeta
                                             {lead.isPicked ? `Assigned` : 'Unassigned'}
                                         </span>
                                         {!lead.isPicked && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const token = getAuthToken();
-                                                    const decoded = decodeJwt(token);
-                                                    const userId = decoded?.sub as string;
-                                                    if (userId) {
-                                                        pickLead.mutate({ id: lead.id, userId });
-                                                    } else {
-                                                        toast({ title: 'Error', description: 'User ID not found in token', variant: 'destructive' });
-                                                    }
-                                                }}
-                                                disabled={pickLead.isPending && pickLead.variables?.id === lead.id}
-                                                className="px-3 py-1 text-[10px] font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 dark:hover:bg-indigo-900/60 transition-colors border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center gap-1.5 hover:shadow-sm cursor-pointer disabled:cursor-default"
-                                            >
-                                                {pickLead.isPending && pickLead.variables?.id === lead.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
-                                                Pick
-                                            </button>
+                                            <TooltipProvider>
+                                                <Tooltip delayDuration={300}>
+                                                    <TooltipTrigger asChild>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const token = getAuthToken();
+                                                                const decoded = decodeJwt(token);
+                                                                const userId = decoded?.sub as string;
+                                                                if (userId) {
+                                                                    pickLead.mutate({ id: lead.id, userId });
+                                                                } else {
+                                                                    toast({ title: 'Error', description: 'User ID not found in token', variant: 'destructive' });
+                                                                }
+                                                            }}
+                                                            disabled={pickLead.isPending && pickLead.variables?.id === lead.id}
+                                                            className="px-3 py-1 text-[10px] font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 dark:hover:bg-indigo-900/60 transition-colors border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center gap-1.5 hover:shadow-sm cursor-pointer disabled:cursor-default"
+                                                        >
+                                                            {pickLead.isPending && pickLead.variables?.id === lead.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
+                                                            Pick
+                                                        </button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Assign this lead to yourself</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         )}
                                     </div>
                                 </div>

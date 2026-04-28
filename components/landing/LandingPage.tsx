@@ -17,6 +17,7 @@ import {
     Megaphone,
     MessageSquare,
     Star,
+    StarHalf,
     Target,
     TrendingUp,
     Twitter,
@@ -65,9 +66,9 @@ const LEAD_SOURCES = [
 ]
 
 const STATS = [
-    { value: "10×", label: "Faster lead response" },
-    { value: "85%", label: "Lead conversion lift" },
-    { value: "6 src", label: "Unified lead channels" },
+    { value: "5×", label: "Faster lead response" },
+    { value: "65%", label: "Lead conversion lift" },
+    { value: "4 src", label: "Unified lead channels" },
     { value: "Real-time", label: "Pipeline visibility" },
 ]
 
@@ -132,21 +133,21 @@ const TESTIMONIALS = [
         name: "Riya Sharma",
         role: "VP Sales, FinServ Pvt. Ltd.",
         avatar: "RS",
-        text: "We went from 3 spreadsheets and 2 WhatsApp groups to one clean dashboard. Lead response time dropped from 4 hours to 8 minutes.",
+        text: "We went from 3 spreadsheets and 2 WhatsApp groups to one clean dashboard. Lead response time dropped from 4 hours to 40 minutes.",
         stars: 5,
     },
     {
         name: "Aditya Mehta",
-        role: "Growth Lead, EduTech Startup",
+        role: "Founder, Paper Deals",
         avatar: "AM",
         text: "The Facebook + Instagram integration alone paid for itself in the first week. Highly recommended for any performance-marketing team.",
-        stars: 5,
+        stars: 4,
     },
     {
         name: "Priya Nair",
         role: "Founder, D2C Brand",
         avatar: "PN",
-        text: "AI lead scoring changed how we prioritise. Our closers now spend 80% of their time on leads that actually convert.",
+        text: "AI lead scoring changed how we prioritise. Our closers now spend 60% of their time on leads that actually convert.",
         stars: 5,
     },
 ]
@@ -253,10 +254,13 @@ export function LandingPage() {
                     transition={{ delay: 0.55 }}
                     className="mt-12 flex items-center gap-3 text-sm text-foreground/50"
                 >
-                    {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                    <span className="ml-1 font-medium">4.9 / 5 · Trusted by 500+ sales teams</span>
+                    <div className="flex">
+                        {[...Array(4)].map((_, i) => (
+                            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        ))}
+                        <StarHalf className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    </div>
+                    <span className="ml-1 font-medium">4.8 / 5 · Trusted by 50+ sales teams</span>
                 </motion.div>
             </section>
 
@@ -506,7 +510,7 @@ export function LandingPage() {
                                 Ready to Close More Deals?
                             </h2>
                             <p className="text-foreground/60 text-lg mb-8 max-w-xl mx-auto">
-                                Join 500+ sales teams already using Nexus AI to capture, score, and close
+                                Join 50+ sales teams already using Nexus AI to capture, score, and close
                                 leads faster than ever.
                             </p>
 
@@ -517,7 +521,7 @@ export function LandingPage() {
                                         className="rounded-2xl px-10 py-6 text-lg font-bold text-white shadow-xl hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300 cursor-pointer"
                                         style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)" }}
                                     >
-                                        Get Started Free
+                                        Get Started
                                         <ArrowRight className="ml-2 w-5 h-5" />
                                     </Button>
                                 </Link>
@@ -533,14 +537,14 @@ export function LandingPage() {
                                 </Link>
                             </div>
 
-                            <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-foreground/50">
+                            {/* <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-foreground/50">
                                 {["No credit card required", "14-day free trial", "Cancel anytime"].map((pt) => (
                                     <div key={pt} className="flex items-center gap-1.5">
                                         <CheckCircle2 className="w-4 h-4 text-green-500" />
                                         {pt}
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
                     </InView>
                 </div>

@@ -8,6 +8,7 @@ import {
 import { TrendingUp, DollarSign, ArrowUpRight, ArrowDownRight, Target, Brain } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 import type { DashboardPeriod } from '@/lib/dashboard-api';
 
@@ -119,15 +120,22 @@ export default function Dashboard() {
                     <p className="text-[var(--text-secondary)] mt-1">AI-powered student admission insights &amp; performance metrics – Invertis University.</p>
                 </div>
                 <div className="flex gap-2">
-                    <select
-                        value={period}
-                        onChange={(e) => setPeriod(e.target.value as DashboardPeriod)}
-                        className="bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10"
-                    >
-                        {(Object.keys(PERIOD_LABELS) as DashboardPeriod[]).map((p) => (
-                            <option key={p} value={p}>{PERIOD_LABELS[p]}</option>
-                        ))}
-                    </select>
+                    <Select value={period} onValueChange={(value) => setPeriod(value as DashboardPeriod)}>
+                        <SelectTrigger className="w-[150px] bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm rounded-xl px-4 py-2 h-10 focus:ring-0 focus:ring-offset-0 focus:outline-none hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <SelectValue placeholder="Select period" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border border-[var(--border-subtle)] shadow-xl p-1" align="end">
+                            {(Object.keys(PERIOD_LABELS) as DashboardPeriod[]).map((p) => (
+                                <SelectItem 
+                                    key={p} 
+                                    value={p}
+                                    className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10"
+                                >
+                                    <span className="font-medium">{PERIOD_LABELS[p]}</span>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 

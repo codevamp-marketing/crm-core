@@ -1,24 +1,31 @@
 import React from 'react'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Role } from '@/lib/types'
-
-// Decode JWT payload server-side (no verification — claims only)
-function decodeJwtServer(token: string): Record<string, any> | null {
-    try {
-        const base64 = token.split('.')[1]
-        if (!base64) return null
-        const json = Buffer.from(base64.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')
-        return JSON.parse(json)
-    } catch {
-        return null
-    }
-}
+import { decodeJwt } from '@/lib/utils'
 
 export default async function DashboardGroupLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value ?? null
-    const decoded = token ? decodeJwtServer(token) : null
+    
+    if (!token) {
+        redirect('/login')
+    }
+
+    const decoded = decodeJwt(token)
+    
+    if (!decoded) {
+        redirect('/login')
+    }
+
+    if (decoded.exp) {
+        const currentTime = Math.floor(Date.now() / 1000)
+        if (decoded.exp < currentTime) {
+            redirect('/login')
+        }
+    }
+
     const role = (decoded?.role ?? 'executive') as Role
 
     return <DashboardLayout userRole={role}>{children}</DashboardLayout>

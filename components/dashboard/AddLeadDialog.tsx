@@ -130,7 +130,7 @@ export function AddLeadDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                                         <FormLabel className="font-semibold text-zinc-900 dark:text-zinc-100 ml-[3px]">Full Name</FormLabel>
                                         <FormControl>
                                             <Input
-                                                className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
+                                                className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
                                                 placeholder="Enter your full name"
                                                 {...field}
                                             />
@@ -147,7 +147,7 @@ export function AddLeadDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                                         <FormLabel className="font-semibold text-zinc-900 dark:text-zinc-100 ml-[2px]">Email Address</FormLabel>
                                         <FormControl>
                                             <Input
-                                                className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
+                                                className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
                                                 placeholder="Enter your email"
                                                 {...field}
                                             />
@@ -164,7 +164,7 @@ export function AddLeadDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                                         <FormLabel className="font-semibold text-zinc-900 dark:text-zinc-100 ml-[2px]">Phone Number</FormLabel>
                                         <FormControl>
                                             <Input
-                                                className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
+                                                className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
                                                 placeholder="Enter your phone number"
                                                 {...field}
                                             />
@@ -181,22 +181,34 @@ export function AddLeadDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                                         <FormLabel className="font-semibold text-zinc-900 dark:text-zinc-100 ml-[2px]">Select Course</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
-                                                <SelectTrigger className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100">
+                                                <SelectTrigger className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus:ring-0 focus:ring-offset-0 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100">
                                                     <SelectValue placeholder="Select course..." />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent className="max-h-[250px] overflow-y-auto border-zinc-200 dark:border-[#2a3441] dark:bg-[#151b28]">
                                                 <SelectGroup>
                                                     <SelectLabel className="text-indigo-600 dark:text-indigo-400">UG PROGRAMS</SelectLabel>
-                                                    {COURSES.UG.map(course => <SelectItem key={course} value={course}>{course}</SelectItem>)}
+                                                    {COURSES.UG.map(course =>
+                                                        <SelectItem key={course} value={course}
+                                                            className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10"
+                                                        >{course}</SelectItem>
+                                                    )}
                                                 </SelectGroup>
                                                 <SelectGroup>
                                                     <SelectLabel className="text-indigo-600 dark:text-indigo-400">PG PROGRAMS</SelectLabel>
-                                                    {COURSES.PG.map(course => <SelectItem key={course} value={course}>{course}</SelectItem>)}
+                                                    {COURSES.PG.map(course =>
+                                                        <SelectItem key={course} value={course}
+                                                            className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10"
+                                                        >{course}</SelectItem>
+                                                    )}
                                                 </SelectGroup>
                                                 <SelectGroup>
                                                     <SelectLabel className="text-indigo-600 dark:text-indigo-400">OTHERS</SelectLabel>
-                                                    {COURSES.OTHERS.map(course => <SelectItem key={course} value={course}>{course}</SelectItem>)}
+                                                    {COURSES.OTHERS.map(course =>
+                                                        <SelectItem key={course} value={course}
+                                                            className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10"
+                                                        >{course}</SelectItem>
+                                                    )}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -214,7 +226,7 @@ export function AddLeadDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                                     <FormLabel className="font-semibold text-zinc-900 dark:text-zinc-100 ml-[2px]">Specialization / Stream</FormLabel>
                                     <FormControl>
                                         <Input
-                                            className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
+                                            className="bg-zinc-50 border-zinc-200 dark:bg-[#151b28] dark:border-[#2a3441] focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl px-4 py-3 h-auto shadow-sm transition-colors text-zinc-900 dark:text-zinc-100"
                                             placeholder="Preferred Specialization (optional)"
                                             {...field}
                                         />

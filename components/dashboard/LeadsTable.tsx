@@ -37,6 +37,13 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
@@ -183,42 +190,52 @@ export default function LeadsTable({ mode, title, subtitle, isPicked, pickedBy }
                         <Popover>
                             <PopoverTrigger asChild>
                                 <button className={clsx("flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors border",
-                                    typeFilter || stageFilter ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 border-transparent"
+                                    typeFilter || stageFilter ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800" : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100 border-transparent"
                                 )}>
                                     <Filter className="w-4 h-4" />
                                     {typeFilter || stageFilter ? 'Filters Active' : 'Filters'}
                                 </button>
                             </PopoverTrigger>
-                            <PopoverContent align="end" className="w-64 p-4">
+                            <PopoverContent align="end" className="w-64 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] shadow-xl">
                                 <div className="space-y-4">
                                     <h4 className="font-medium text-sm">Advanced Filters</h4>
 
                                     <div className="space-y-2">
                                         <label className="text-xs font-medium text-zinc-500">Lead Type</label>
-                                        <select
-                                            value={typeFilter}
-                                            onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-                                            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2 text-sm"
+                                        <Select 
+                                            value={typeFilter || "all"} 
+                                            onValueChange={(value) => { setTypeFilter(value === "all" ? "" : value); setPage(1); }}
                                         >
-                                            <option value="">All Types</option>
-                                            <option value="Hot">Hot</option>
-                                            <option value="Warm">Warm</option>
-                                            <option value="Cold">Cold</option>
-                                        </select>
+                                            <SelectTrigger className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm rounded-xl px-4 py-2 h-10 focus:ring-0 focus:ring-offset-0 focus:outline-none hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                                <SelectValue placeholder="All Types" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border border-[var(--border-subtle)] shadow-xl p-1" position="popper" sideOffset={4}>
+                                                <SelectItem value="all" className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 font-medium">All Types</SelectItem>
+                                                <SelectItem value="Hot" className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 font-medium">Hot</SelectItem>
+                                                <SelectItem value="Warm" className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 font-medium">Warm</SelectItem>
+                                                <SelectItem value="Cold" className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 font-medium">Cold</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
 
                                     <div className="space-y-2">
                                         <label className="text-xs font-medium text-zinc-500">Pipeline Stage</label>
-                                        <select
-                                            value={stageFilter}
-                                            onChange={(e) => { setStageFilter(e.target.value); setPage(1); }}
-                                            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2 text-sm"
+                                        <Select 
+                                            value={stageFilter || "all"} 
+                                            onValueChange={(value) => { setStageFilter(value === "all" ? "" : value); setPage(1); }}
                                         >
-                                            <option value="">All Stages</option>
-                                            {Object.keys(PIPELINE_STAGE_LABELS).map((key) => (
-                                                <option key={key} value={key}>{PIPELINE_STAGE_LABELS[key as PipelineStage]}</option>
-                                            ))}
-                                        </select>
+                                            <SelectTrigger className="w-full bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-sm rounded-xl px-4 py-2 h-10 focus:ring-0 focus:ring-offset-0 focus:outline-none hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                                <SelectValue placeholder="All Stages" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border border-[var(--border-subtle)] shadow-xl p-1" position="popper" sideOffset={4}>
+                                                <SelectItem value="all" className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 font-medium">All Stages</SelectItem>
+                                                {Object.keys(PIPELINE_STAGE_LABELS).map((key) => (
+                                                    <SelectItem key={key} value={key} className="rounded-lg py-2.5 cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 font-medium">
+                                                        {PIPELINE_STAGE_LABELS[key as PipelineStage]}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
 
                                     {(typeFilter || stageFilter) && (
@@ -385,21 +402,29 @@ export default function LeadsTable({ mode, title, subtitle, isPicked, pickedBy }
                                                     </div>
                                                     <div>
                                                         <div className="font-semibold text-[var(--text-primary)]">{lead.name || 'Unknown'}</div>
-                                                        <div
-                                                            className={clsx(
-                                                                "text-[var(--text-secondary)] text-xs transition-colors",
-                                                                lead.email && "cursor-pointer hover:text-indigo-500 hover:underline"
-                                                            )}
-                                                            onClick={(e) => {
-                                                                if (!lead.email) return;
-                                                                e.stopPropagation();
-                                                                navigator.clipboard.writeText(lead.email);
-                                                                toast({ title: "Copied!", description: "Email copied to clipboard.", duration: 2000 });
-                                                            }}
-                                                            title={lead.email ? "Click to copy email" : ""}
-                                                        >
-                                                            {lead.email || '—'}
-                                                        </div>
+                                                        {lead.email ? (
+                                                            <TooltipProvider>
+                                                                <Tooltip delayDuration={300}>
+                                                                    <TooltipTrigger asChild>
+                                                                        <div
+                                                                            className="text-[var(--text-secondary)] text-xs transition-colors cursor-pointer hover:text-indigo-500 hover:underline"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                navigator.clipboard.writeText(lead.email!);
+                                                                                toast({ title: "Copied!", description: "Email copied to clipboard.", duration: 2000 });
+                                                                            }}
+                                                                        >
+                                                                            {lead.email}
+                                                                        </div>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p>Click to copy email</p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        ) : (
+                                                            <div className="text-[var(--text-secondary)] text-xs">—</div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -414,21 +439,29 @@ export default function LeadsTable({ mode, title, subtitle, isPicked, pickedBy }
 
                                             {/* Phone */}
                                             <TableCell className="py-4 text-sm text-[var(--text-primary)]">
-                                                <span
-                                                    className={clsx(
-                                                        "transition-colors",
-                                                        lead.phone && "cursor-pointer hover:text-indigo-500 hover:underline"
-                                                    )}
-                                                    onClick={(e) => {
-                                                        if (!lead.phone) return;
-                                                        e.stopPropagation();
-                                                        navigator.clipboard.writeText(lead.phone);
-                                                        toast({ title: "Copied!", description: "Phone number copied to clipboard.", duration: 2000 });
-                                                    }}
-                                                    title={lead.phone ? "Click to copy phone number" : ""}
-                                                >
-                                                    {lead.phone || '—'}
-                                                </span>
+                                                {lead.phone ? (
+                                                    <TooltipProvider>
+                                                        <Tooltip delayDuration={300}>
+                                                            <TooltipTrigger asChild>
+                                                                <span
+                                                                    className="transition-colors cursor-pointer hover:text-indigo-500 hover:underline"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        navigator.clipboard.writeText(lead.phone!);
+                                                                        toast({ title: "Copied!", description: "Phone number copied to clipboard.", duration: 2000 });
+                                                                    }}
+                                                                >
+                                                                    {lead.phone}
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Click to copy phone number</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                ) : (
+                                                    <span>—</span>
+                                                )}
                                             </TableCell>
 
                                             {/* Pipeline Stage */}
@@ -473,9 +506,25 @@ export default function LeadsTable({ mode, title, subtitle, isPicked, pickedBy }
                                             {/* Next Action */}
                                             <TableCell className="py-4">
                                                 {lead.nextBestAction ? (
-                                                    <span className="text-xs text-indigo-700 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-md border border-indigo-100 dark:border-indigo-800">
-                                                        {lead.nextBestAction}
-                                                    </span>
+                                                    lead.nextBestAction.length > 20 ? (
+                                                        <div className="flex items-start gap-1.5 text-xs text-indigo-700 dark:text-indigo-400 font-medium">
+                                                            <span className="shrink-0 mt-[5px] w-1.5 h-1.5 rounded-full bg-indigo-500/70 dark:bg-indigo-400/70"></span>
+                                                            <TooltipProvider>
+                                                                <Tooltip delayDuration={300}>
+                                                                    <TooltipTrigger asChild>
+                                                                        <span className="leading-relaxed line-clamp-2 cursor-pointer">{lead.nextBestAction}</span>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p className="max-w-xs">{lead.nextBestAction}</p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="inline-flex whitespace-nowrap text-xs text-indigo-700 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-indigo-950/30 px-2.5 py-1 rounded-md border border-indigo-100 dark:border-indigo-800/60">
+                                                            {lead.nextBestAction}
+                                                        </span>
+                                                    )
                                                 ) : (
                                                     <span className="text-xs text-[var(--text-secondary)]">—</span>
                                                 )}
@@ -492,32 +541,49 @@ export default function LeadsTable({ mode, title, subtitle, isPicked, pickedBy }
                                             <TableCell className="py-4">
                                                 <div className="flex items-center justify-center gap-2">
                                                     {mode === 'fresh' && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                const token = getAuthToken();
-                                                                const decoded = decodeJwt(token);
-                                                                const userId = decoded?.sub as string;
-                                                                if (userId) {
-                                                                    pickLead.mutate({ id: lead.id, userId });
-                                                                } else {
-                                                                    toast({ title: 'Error', description: 'User ID not found in token', variant: 'destructive' });
-                                                                }
-                                                            }}
-                                                            disabled={pickLead.isPending && pickLead.variables?.id === lead.id}
-                                                            className="px-3 py-1.5 text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 dark:hover:bg-indigo-900/60 transition-colors border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center gap-1.5 hover:shadow-sm cursor-pointer disabled:cursor-default"
-                                                        >
-                                                            {pickLead.isPending && pickLead.variables?.id === lead.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-                                                            Pick
-                                                        </button>
+                                                        <TooltipProvider>
+                                                            <Tooltip delayDuration={300}>
+                                                                <TooltipTrigger asChild>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            const token = getAuthToken();
+                                                                            const decoded = decodeJwt(token);
+                                                                            const userId = decoded?.sub as string;
+                                                                            if (userId) {
+                                                                                pickLead.mutate({ id: lead.id, userId });
+                                                                            } else {
+                                                                                toast({ title: 'Error', description: 'User ID not found in token', variant: 'destructive' });
+                                                                            }
+                                                                        }}
+                                                                        disabled={pickLead.isPending && pickLead.variables?.id === lead.id}
+                                                                        className="px-3 py-1.5 text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 dark:hover:bg-indigo-900/60 transition-colors border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center gap-1.5 hover:shadow-sm cursor-pointer disabled:cursor-default"
+                                                                    >
+                                                                        {pickLead.isPending && pickLead.variables?.id === lead.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                                                                        Pick
+                                                                    </button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>Assign this lead to yourself</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
                                                     )}
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); }}
-                                                        className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700 cursor-pointer"
-                                                        title="View Activity"
-                                                    >
-                                                        <Eye className="w-4 h-4" />
-                                                    </button>
+                                                    <TooltipProvider>
+                                                        <Tooltip delayDuration={300}>
+                                                            <TooltipTrigger asChild>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); }}
+                                                                    className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700 cursor-pointer"
+                                                                >
+                                                                    <Eye className="w-4 h-4" />
+                                                                </button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>View Activity</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

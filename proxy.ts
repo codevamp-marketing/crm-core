@@ -1,18 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRoleDashboardPath, isAllowedForRole } from '@/lib/rbac';
-
-/* ── Lightweight JWT decoder (Edge-safe, no Node.js APIs) ────────────────── */
-function decodeJwtEdge(token: string): Record<string, any> | null {
-    try {
-        const base64 = token.split('.')[1];
-        if (!base64) return null;
-        // atob is available in the Edge runtime
-        const json = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
-        return JSON.parse(json);
-    } catch {
-        return null;
-    }
-}
+import { decodeJwt } from '@/lib/utils';
 
 /* ── Proxy ───────────────────────────────────────────────────────────────── */
 export function proxy(request: NextRequest) {
@@ -28,8 +16,18 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
     }
 
-    // ── 2. Decode token to extract role ──────────────────────────────────────
-    const decoded = decodeJwtEdge(token);
+    // ── 2. Decode token to extract role and check expiration ─────────────────
+    const decoded = decodeJwt(token);
+    
+    if (decoded && decoded.exp) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (decoded.exp < currentTime) {
+            const loginUrl = new URL('/login', request.url);
+            loginUrl.searchParams.set('from', pathname);
+            return NextResponse.redirect(loginUrl);
+        }
+    }
+
     const role = decoded?.role as string | undefined;
 
     // If token is malformed or has no role → send to login

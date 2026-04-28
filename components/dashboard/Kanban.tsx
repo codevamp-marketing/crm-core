@@ -10,6 +10,12 @@ import { decodeJwt } from '@/lib/utils';
 import { Lead, PipelineStage, PIPELINE_STAGE_LABELS } from '@/lib/types';
 import { LeadDetailSheet } from './LeadDetailSheet';
 import { AddLeadDialog } from './AddLeadDialog';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // ── Kanban column order ────────────────────────────────────────────────────────
 const STAGES: PipelineStage[] = [
@@ -54,69 +60,78 @@ function LeadCard({
     const [isDragging, setIsDragging] = useState(false);
 
     return (
-        <div
-            draggable
-            onDragStart={(e) => {
-                setIsDragging(true);
-                onDragStart(e, lead);
-            }}
-            onDragEnd={() => setIsDragging(false)}
-            onClick={() => onSelect(lead)}
-            className={clsx(
-                "cursor-grab active:cursor-grabbing bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)]",
-                "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)]",
-                "hover:border-zinc-300 dark:hover:border-zinc-600 transition-all group select-none",
-                isDragging && "opacity-40 scale-95 shadow-none border-dashed",
-            )}
-        >
-            <div className="flex justify-between items-start mb-3">
-                <span className={clsx(
-                    "text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide",
-                    lead.type === 'Hot'
-                        ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
-                        : lead.type === 'Warm'
-                            ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"
-                            : "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400"
-                )}>
-                    {lead.type || 'Warm'}
-                </span>
-                <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MoreHorizontal className="w-4 h-4" />
-                </button>
-            </div>
+        <TooltipProvider>
+            <Tooltip delayDuration={400}>
+                <TooltipTrigger asChild>
+                    <div
+                        draggable
+                        onDragStart={(e) => {
+                            setIsDragging(true);
+                            onDragStart(e, lead);
+                        }}
+                        onDragEnd={() => setIsDragging(false)}
+                        onClick={() => onSelect(lead)}
+                        className={clsx(
+                            "cursor-grab active:cursor-grabbing bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)]",
+                            "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)]",
+                            "hover:border-zinc-300 dark:hover:border-zinc-600 transition-all group select-none",
+                            isDragging && "opacity-40 scale-95 shadow-none border-dashed",
+                        )}
+                    >
+                        <div className="flex justify-between items-start mb-3">
+                            <span className={clsx(
+                                "text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide",
+                                lead.type === 'Hot'
+                                    ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
+                                    : lead.type === 'Warm'
+                                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"
+                                        : "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400"
+                            )}>
+                                {lead.type || 'Warm'}
+                            </span>
+                            <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100 transition-opacity">
+                                <MoreHorizontal className="w-4 h-4" />
+                            </button>
+                        </div>
 
-            <h4 className="font-semibold text-[var(--text-primary)] text-sm mb-0.5 truncate">{lead.name || 'Unknown'}</h4>
-            <p className="text-xs text-[var(--text-secondary)] mb-3 truncate">{lead.course || '—'}</p>
+                        <h4 className="font-semibold text-[var(--text-primary)] text-sm mb-0.5 truncate">{lead.name || 'Unknown'}</h4>
+                        <p className="text-xs text-[var(--text-secondary)] mb-3 truncate">{lead.course || '—'}</p>
 
-            {/* AI Score bar */}
-            {lead.aiScore > 0 && (
-                <div className="flex items-center gap-2 mb-3">
-                    <div className="flex-1 h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                            className={clsx("h-full rounded-full transition-all",
-                                lead.aiScore > 70 ? "bg-emerald-500" :
-                                    lead.aiScore > 40 ? "bg-amber-500" : "bg-rose-500"
+                        {/* AI Score bar */}
+                        {lead.aiScore > 0 && (
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="flex-1 h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                    <div
+                                        className={clsx("h-full rounded-full transition-all",
+                                            lead.aiScore > 70 ? "bg-emerald-500" :
+                                                lead.aiScore > 40 ? "bg-amber-500" : "bg-rose-500"
+                                        )}
+                                        style={{ width: `${lead.aiScore}%` }}
+                                    />
+                                </div>
+                                <span className="text-[10px] text-[var(--text-secondary)] font-medium w-6 text-right">{lead.aiScore}</span>
+                            </div>
+                        )}
+
+                        <div className="flex items-center justify-between text-xs pt-3 border-t border-[var(--border-subtle)]">
+                            <div className="flex items-center gap-1.5 text-[var(--text-primary)] font-medium bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
+                                <IndianRupee className="w-3 h-3 text-[var(--text-secondary)]" />
+                                <span>{lead.dealValue > 0 ? lead.dealValue.toLocaleString('en-IN') : '—'}</span>
+                            </div>
+                            {lead.createdAt && (
+                                <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>{new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}</span>
+                                </div>
                             )}
-                            style={{ width: `${lead.aiScore}%` }}
-                        />
+                        </div>
                     </div>
-                    <span className="text-[10px] text-[var(--text-secondary)] font-medium w-6 text-right">{lead.aiScore}</span>
-                </div>
-            )}
-
-            <div className="flex items-center justify-between text-xs pt-3 border-t border-[var(--border-subtle)]">
-                <div className="flex items-center gap-1.5 text-[var(--text-primary)] font-medium bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
-                    <IndianRupee className="w-3 h-3 text-[var(--text-secondary)]" />
-                    <span>{lead.dealValue > 0 ? lead.dealValue.toLocaleString('en-IN') : '—'}</span>
-                </div>
-                {lead.createdAt && (
-                    <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-                        <Calendar className="w-3 h-3" />
-                        <span>{new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}</span>
-                    </div>
-                )}
-            </div>
-        </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Drag to change stage</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     );
 }
 

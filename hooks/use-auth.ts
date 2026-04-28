@@ -33,7 +33,7 @@ export function useSignup() {
 
         onSuccess: (user) => {
             toast({
-                title: 'Account created! 🎉',
+                title: 'Account created!',
                 description: `Welcome to Nexus AI${user.username ? `, ${user.username}` : ''}! Sign in to get started.`,
             });
             router.push(navigationPaths.login);
